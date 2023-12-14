@@ -1,5 +1,5 @@
-OCIORG                    ?= quay.io/lvh-images
-LVH                       ?= $(OCIORG)/lvh
+OCIORG                    ?= sebymiano
+LVH                       ?= quay.io/lvh-images/lvh
 ROOT_BUILDER              ?= $(OCIORG)/root-builder
 ROOT_IMAGES               ?= $(OCIORG)/root-images
 KERNEL_BUILDER            ?= $(OCIORG)/kernel-builder
@@ -36,7 +36,8 @@ root-builder:
 .PHONY: root-images
 root-images: root-builder
 	$(DOCKER) build -f dockerfiles/root-images \
-		--build-arg ROOT_BUILDER_TAG=latest \
+		--build-arg ROOT_BUILDER_TAG=$(ROOT_BUILDER_TAG) \
+		--build-arg ROOT_BUILDER_NAME=$(ROOT_BUILDER) \
 		-t $(ROOT_IMAGES):$(ROOT_IMAGES_TAG)  .
 
 .PHONY: kernel-images
@@ -44,6 +45,7 @@ kernel-images: kernel-builder
 	for v in $(KERNEL_VERSIONS) ; do \
 		$(DOCKER) build --no-cache \
 			--build-arg KERNEL_BUILDER_TAG=$(KERNEL_BUILDER_TAG) \
+			--build-arg KERNEL_BUILDER_NAME=$(KERNEL_BUILDER) \
 			--build-arg KERNEL_VER=$$v \
 			-f dockerfiles/kernel-images -t $(KERNEL_IMAGES):$$v . ; \
 	done
@@ -53,9 +55,12 @@ kind: kernel-images root-images
 	for v in $(KERNEL_VERSIONS) ; do \
 		 $(DOCKER) build --no-cache \
 			--build-arg KERNEL_VER=$$v \
-			--build-arg KERNEL_IMAGE_TAG=$$v-${KERNEL_BUILDER_TAG} \
-			--build-arg ROOT_BUILDER_TAG=$(ROOT_BUILDER_TAG) \
+			--build-arg ROOT_IMAGES_NAME=$(ROOT_IMAGES) \
 			--build-arg ROOT_IMAGES_TAG=$(ROOT_IMAGES_TAG) \
+			--build-arg KERNEL_IMAGES_NAME=$(KERNEL_IMAGES) \
+			--build-arg KERNEL_IMAGE_TAG=$$v \
+			--build-arg ROOT_BUILDER_NAME=$(ROOT_BUILDER) \
+			--build-arg ROOT_BUILDER_TAG=$(ROOT_BUILDER_TAG) \
 			-f dockerfiles/kind-images -t $(KIND_IMAGES):$$v . ; \
 	done
 
@@ -64,8 +69,11 @@ complexity-test: kernel-images root-images
 	for v in $(KERNEL_VERSIONS) ; do \
 		 $(DOCKER) build --no-cache \
 			--build-arg KERNEL_VER=$$v \
-			--build-arg KERNEL_IMAGE_TAG=$$v-${KERNEL_BUILDER_TAG} \
-			--build-arg ROOT_BUILDER_TAG=$(ROOT_BUILDER_TAG)_ \
+			--build-arg ROOT_IMAGES_NAME=$(ROOT_IMAGES) \
 			--build-arg ROOT_IMAGES_TAG=$(ROOT_IMAGES_TAG) \
+			--build-arg KERNEL_IMAGES_NAME=$(KERNEL_IMAGES) \
+			--build-arg KERNEL_IMAGE_TAG=$$v \
+			--build-arg ROOT_BUILDER_NAME=$(ROOT_BUILDER) \
+			--build-arg ROOT_BUILDER_TAG=$(ROOT_BUILDER_TAG) \
 			-f dockerfiles/complexity-test-images -t $(COMPLEXITY_TEST_IMAGES):$$v . ; \
 	done

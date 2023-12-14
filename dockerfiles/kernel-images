@@ -2,7 +2,10 @@
 
 ARG KERNEL_BUILDER_TAG=20231017.111512
 
-FROM quay.io/lvh-images/kernel-builder-ci:"${KERNEL_BUILDER_TAG}" AS builder
+ARG KERNEL_BUILDER_NAME=quay.io/lvh-images/kernel-builder-ci
+
+FROM ${KERNEL_BUILDER_NAME}:"${KERNEL_BUILDER_TAG}" AS builder
+
 ARG KERNEL_VER=bpf-next
 COPY _data /data
 WORKDIR /data
