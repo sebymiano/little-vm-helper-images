@@ -77,3 +77,10 @@ complexity-test: kernel-images root-images
 			--build-arg ROOT_BUILDER_TAG=$(ROOT_BUILDER_TAG) \
 			-f dockerfiles/complexity-test-images -t $(COMPLEXITY_TEST_IMAGES):$$v . ; \
 	done
+
+
+.PHONY: push
+push: 
+	for v in $(KERNEL_VERSIONS) ; do \
+		 $(DOCKER) push $(KIND_IMAGES):$$v ; \
+	done
