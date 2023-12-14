@@ -7,7 +7,7 @@ testing/development.
 ## Use
 
 The easiest way to use this repository is via the Makefile, which performs the builds in docker
-containers that include all the necessary dependnecies. `make` without arguments will print a list
+containers that include all the necessary dependencies. `make` without arguments will print a list
 of targets. Alternatively, [lvh](https://github.com/cilium/little-vm-helper/) can be used directly,
 which is  faster but requres the necessary tools (e.g., guestfs-tools) to be installed in the host.
 
@@ -50,7 +50,6 @@ $ lvh  run --host-mount $(pwd) --image _data/images/base.qcow2
 ### Dockerfiles
 
 - [kernel-builder](./dockerfiles/kernel-builder) builds a container for building kernel images
-  images
 - [kernel-images](./dockerfiles/kernel-images) builds a container with the kernel images
 - [root-builder](./dockerfiles/root-builder) builds a container for building root images
 - [root-images](./dockerfiles/root-images) builds a container with all the root images
