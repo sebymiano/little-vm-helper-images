@@ -181,6 +181,143 @@
         ]
     },
     {
+        "name": "pathnet.qcow2",
+        "image_size": "20G",
+        "packages": [
+            "jq",
+            "wget",
+            "moreutils",
+            "netcat-openbsd",
+            "gpg-agent",
+            "bpftool",
+            "ca-certificates",
+            "curl",
+            "iproute2",
+            "less",
+            "openssh-server",
+            "sudo",
+            "util-linux",
+            "vim",
+            "build-essential",
+            "git",
+            "gpg",
+            "libarchive-tools",
+            "ethtool",
+            "systemd-resolved",
+            "libelf-dev",
+            "python3.11",
+            "python3.11-dev",
+            "python3.11-venv",
+            "rsync",
+            "libcap2",
+            "curl",
+            "pkg-config",
+            "build-essential",
+            "python-is-python3",
+            "binutils-dev",
+            "libcap-dev",
+            "lsb-release",
+            "wget",
+            "software-properties-common",
+            "gnupg"
+        ],
+        "actions": [
+            {
+                "comment": "disable password for root",
+                "op": {
+                    "Cmd": "passwd -d root"
+                },
+                "type": "run-command"
+            },
+            {
+                "comment": "disable systemd timers",
+                "op": {
+                    "Cmd": "rm /lib/systemd/system/*.timer"
+                },
+                "type": "run-command"
+            },
+            {
+                "op": {
+                    "File": "/etc/systemd/system.conf",
+                    "Line": "DefaultLimitNOFILE=65535"
+                },
+                "type": "append-line"
+            },
+            {
+                "op": {
+                    "File": "/etc/sysctl.conf",
+                    "Line": "fs.inotify.max_user_watches = 524288"
+                },
+                "type": "append-line"
+            },
+            {
+                "op": {
+                    "File": "/etc/sysctl.conf",
+                    "Line": "fs.inotify.max_user_instances = 512"
+                },
+                "type": "append-line"
+            },
+            {
+                "comment": "env",
+                "op": {
+                    "File": "/data/env.sh",
+                    "Dest": "/etc/profile.d/path.sh"
+                },
+                "type": "upload"
+            },
+            {
+                "comment": "copy-in bootstrap dir",
+                "op": {
+                    "LocalPath": "/data/bootstrap",
+                    "RemoteDir": "/"
+                },
+                "type": "copy-in"
+            },
+            {
+                "comment": "enable networking",
+                "op": {
+                    "Cmd": "/bootstrap/networkd.sh"
+                },
+                "type": "run-command"
+            },
+            {
+                "comment": "configure sshd",
+                "op": {
+                    "Cmd": "/bootstrap/sshd.sh"
+                },
+                "type": "run-command"
+            },
+            {
+                "comment": "configure mounts",
+                "op": {
+                    "Cmd": "/bootstrap/fstab.sh"
+                },
+                "type": "run-command"
+            },
+            {
+                "comment": "install go",
+                "op": {
+                    "Cmd": "/bootstrap/golang.sh"
+                },
+                "type": "run-command"
+            },
+            {
+                "comment": "install docker",
+                "op": {
+                    "Cmd": "/bootstrap/deb-docker.sh"
+                },
+                "type": "run-command"
+            },
+            {
+                "comment": "install pathnet",
+                "op": {
+                    "Cmd": "/bootstrap/pathnet.sh"
+                },
+                "type": "run-command"
+            }
+        ]
+    },
+    {
         "name": "complexity-test.qcow2",
         "packages": [
             "ca-certificates",

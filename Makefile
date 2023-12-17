@@ -5,6 +5,7 @@ ROOT_IMAGES               ?= $(OCIORG)/lvh-root-images
 KERNEL_BUILDER            ?= $(OCIORG)/lvh-kernel-builder
 KERNEL_IMAGES             ?= $(OCIORG)/lvh-kernel-images
 KIND_IMAGES               ?= $(OCIORG)/lvh-kind
+PATHNET_IMAGES            ?= $(OCIORG)/lvh-pathnet
 COMPLEXITY_TEST_IMAGES    ?= $(OCIORG)/lvh-complexity-test
 
 KERNEL_BUILDER_TAG        ?= main
@@ -23,6 +24,7 @@ all:
 	@echo "  root-images:      build root fs images"
 	@echo "  kernel-images:    build kernel images"
 	@echo "  kind:             build root kind images"
+	@echo "  pathnet:          build root pathnet images"
 	@echo "  complexity-test:  build root complexity-test images"
 
 .PHONY: kernel-builder
@@ -64,6 +66,20 @@ kind: kernel-images root-images
 			-f dockerfiles/kind-images -t $(KIND_IMAGES):$$v . ; \
 	done
 
+.PHONY: pathnet
+pathnet: kernel-images root-images
+	for v in $(KERNEL_VERSIONS) ; do \
+		 $(DOCKER) build --no-cache \
+			--build-arg KERNEL_VER=$$v \
+			--build-arg ROOT_IMAGES_NAME=$(ROOT_IMAGES) \
+			--build-arg ROOT_IMAGES_TAG=$(ROOT_IMAGES_TAG) \
+			--build-arg KERNEL_IMAGES_NAME=$(KERNEL_IMAGES) \
+			--build-arg KERNEL_IMAGE_TAG=$$v \
+			--build-arg ROOT_BUILDER_NAME=$(ROOT_BUILDER) \
+			--build-arg ROOT_BUILDER_TAG=$(ROOT_BUILDER_TAG) \
+			-f dockerfiles/pathnet-images -t $(PATHNET_IMAGES):$$v . ; \
+	done
+
 .PHONY: complexity-test
 complexity-test: kernel-images root-images
 	for v in $(KERNEL_VERSIONS) ; do \
@@ -82,5 +98,5 @@ complexity-test: kernel-images root-images
 .PHONY: push
 push: 
 	for v in $(KERNEL_VERSIONS) ; do \
-		 $(DOCKER) push $(KIND_IMAGES):$$v ; \
+		 $(DOCKER) push $(PATHNET_IMAGES):$$v ; \
 	done

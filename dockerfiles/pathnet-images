@@ -1,0 +1,51 @@
+# syntax=docker/dockerfile:1.3-labs
+# vim: set ft=dockerfile:
+
+ARG ROOT_BUILDER_TAG=20230707.160728
+ARG ROOT_IMAGES_TAG=20231124.100406
+
+# override this with --build-arg
+ARG KERNEL_VER=bpf-next
+ARG KERNEL_IMAGE_TAG=bpf-next
+
+ARG ROOT_IMAGES_NAME=quay.io/lvh-images/root-images-ci
+ARG KERNEL_IMAGES_NAME=quay.io/lvh-images/kernel-images-ci
+ARG ROOT_BUILDER_NAME=quay.io/lvh-images/root-builder-ci
+
+FROM ${ROOT_IMAGES_NAME}:"${ROOT_IMAGES_TAG}" AS root-images
+FROM ${KERNEL_IMAGES_NAME}:"${KERNEL_IMAGE_TAG}" AS kimg
+FROM ${ROOT_BUILDER_NAME}:"${ROOT_BUILDER_TAG}" AS builder
+
+ARG KERNEL_VER=bpf-next
+
+WORKDIR /data
+COPY --from=kimg /data/kernels /data/kernels
+COPY --from=root-images /data/images/pathnet.qcow2.zst /data/images/pathnet.qcow2.zst
+RUN zstd --decompress --rm --threads=0 /data/images/pathnet.qcow2.zst
+
+COPY <<EOF /data/images.json
+[
+    {
+        \"name\": \"pathnet_"${KERNEL_VER}".qcow2\",
+        \"parent\": \"pathnet.qcow2\",
+        \"actions\": [
+            {
+                \"comment\": \"install "${KERNEL_VER}"\",
+                \"op\": {
+                    \"KernelInstallDir\": \"/data/kernels/"${KERNEL_VER}"\"
+                },
+                \"type\": \"install-kernel\"
+            },
+            { \"op\": { \"Hostname\": \"pathnet-"${KERNEL_VER}"\"}, \"type\": \"set-hostname\" }
+        ]
+    }
+]
+EOF
+
+# mmdebstrap outputs messages in stderr, so we redirect stderr
+RUN lvh images build --image pathnet_${KERNEL_VER}.qcow2 --dir /data 2>&1
+RUN zstd --compress --rm --threads=0 /data/images/pathnet_${KERNEL_VER}.qcow2
+RUN rm /data/images/*.qcow2
+
+FROM busybox
+COPY --from=builder /data/images /data/images
