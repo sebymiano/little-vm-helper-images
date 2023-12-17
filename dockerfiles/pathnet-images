@@ -45,6 +45,7 @@ EOF
 # mmdebstrap outputs messages in stderr, so we redirect stderr
 RUN lvh images build --image pathnet_${KERNEL_VER}.qcow2 --dir /data 2>&1
 RUN zstd --compress --rm --threads=0 /data/images/pathnet_${KERNEL_VER}.qcow2
+RUN mv /data/images/pathnet_${KERNEL_VER}.qcow2.zst /data/images/lvh-pathnet_${KERNEL_VER}.qcow2.zst
 RUN rm /data/images/*.qcow2
 
 FROM busybox
