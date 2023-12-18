@@ -181,6 +181,13 @@
                 "type": "run-command"
             },
             {
+                "comment": "install LLVM",
+                "op": {
+                    "Cmd": "/bootstrap/llvm.sh 15"
+                },
+                "type": "run-command"
+            },
+            {
                 "comment": "install pathnet",
                 "op": {
                     "Cmd": "/bootstrap/pathnet.sh"

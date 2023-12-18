@@ -2,9 +2,9 @@
 set -euxo pipefail
 
 LLVM_VERSION=15
-wget https://apt.llvm.org/llvm.sh
-chmod +x llvm.sh
-./llvm.sh $LLVM_VERSION
+# wget https://apt.llvm.org/llvm.sh
+# chmod +x llvm.sh
+# ./llvm.sh $LLVM_VERSION
 
 #bash -c "DEBIAN_FRONTEND=noninteractive apt-get install -yq llvm clang"
 
