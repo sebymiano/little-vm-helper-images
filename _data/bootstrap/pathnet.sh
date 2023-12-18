@@ -3,6 +3,13 @@ set -euxo pipefail
 
 . /etc/profile
 
+resolv_path="/etc/resolv.conf"
+
+cat >> "$resolv_path" <<EOF
+nameserver 8.8.8.8
+nameserver 1.1.1.1
+EOF
+
 LLVM_VERSION=15
 wget https://apt.llvm.org/llvm.sh
 chmod +x llvm.sh
