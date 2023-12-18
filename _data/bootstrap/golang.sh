@@ -3,6 +3,13 @@ set -euxo pipefail
 
 . /etc/profile
 
+resolv_path="/etc/resolv.conf"
+
+cat >> "$resolv_path" <<EOF
+nameserver 8.8.8.8
+nameserver 1.1.1.1
+EOF
+
 # renovate: datasource=golang-version depName=go
 GOLANG_VERSION=1.21.4
 GOLANG_DOWNLOAD_URL=https://golang.org/dl/go$GOLANG_VERSION.linux-amd64.tar.gz

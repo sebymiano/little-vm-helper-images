@@ -167,13 +167,6 @@
                 "type": "run-command"
             },
             {
-                "comment": "install go",
-                "op": {
-                    "Cmd": "/bootstrap/golang.sh"
-                },
-                "type": "run-command"
-            },
-            {
                 "comment": "install docker",
                 "op": {
                     "Cmd": "/bootstrap/deb-docker.sh"

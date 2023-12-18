@@ -45,6 +45,7 @@ root-builder:
 .PHONY: root-images
 root-images: root-builder
 	$(DOCKER) build -f dockerfiles/root-images \
+		--progress=plain --no-cache \
 		--build-arg ROOT_BUILDER_TAG=$(ROOT_BUILDER_TAG) \
 		--build-arg ROOT_BUILDER_NAME=$(ROOT_BUILDER) \
 		-t $(ROOT_IMAGES):$(ROOT_IMAGES_TAG)  .

@@ -3,6 +3,13 @@ set -euxo pipefail
 
 . /etc/profile
 
+resolv_path="/etc/resolv.conf"
+
+cat >> "$resolv_path" <<EOF
+nameserver 8.8.8.8
+nameserver 1.1.1.1
+EOF
+
 curl -fsSL https://download.docker.com/linux/debian/gpg | \
       gpg --dearmor --yes -o /usr/share/keyrings/docker-archive-keyring.gpg
 
