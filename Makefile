@@ -9,7 +9,7 @@ PATHNET_IMAGES            ?= $(OCIORG)/lvh-pathnet
 KERNEL_BUILDER_TAG        ?= main
 ROOT_BUILDER_TAG          ?= main
 ROOT_IMAGES_TAG           ?= main
-KERNEL_VERSIONS           ?= 4.19 5.4 5.10 5.15 6.1 bpf-next
+KERNEL_VERSIONS           ?= 4.19 5.4 5.10 5.15 6.1 bpf_next
 
 DOCKER ?= docker
 export DOCKER_BUILDKIT = 1
