@@ -18,7 +18,7 @@
         },
         {
             "name": "5.13",
-            "url": "git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git?depth=1#linux-5.10.y"
+            "url": "git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git?depth=1#linux-5.13.y"
         },
         {
             "name": "5.10",
@@ -159,6 +159,7 @@
         [ "--module", "CONFIG_VXLAN" ],
         [ "--module", "CONFIG_IP_NF_IPTABLES" ],
         [ "--module", "CONFIG_IP6_NF_IPTABLES" ],
+        [ "--enable", "CONFIG_NET_IPGRE"],
 
         [ "--enable", "CONFIG_XFRM_OFFLOAD" ],
         [ "--enable", "CONFIG_XFRM_STATISTICS" ],
