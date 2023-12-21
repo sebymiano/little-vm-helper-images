@@ -54,6 +54,7 @@ root-images: root-builder
 kernel-images: kernel-builder
 	for v in $(KERNEL_VERSIONS) ; do \
 		$(DOCKER) build $(DOCKER_BUILD_FLAGS) \
+			--progress=plain \
 			--build-arg KERNEL_BUILDER_TAG=$(KERNEL_BUILDER_TAG) \
 			--build-arg KERNEL_BUILDER_NAME=$(KERNEL_BUILDER) \
 			--build-arg KERNEL_VER=$$v \

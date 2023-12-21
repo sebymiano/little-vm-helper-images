@@ -159,7 +159,6 @@
         [ "--module", "CONFIG_VXLAN" ],
         [ "--module", "CONFIG_IP_NF_IPTABLES" ],
         [ "--module", "CONFIG_IP6_NF_IPTABLES" ],
-        [ "--enable", "CONFIG_NET_IPGRE"],
 
         [ "--enable", "CONFIG_XFRM_OFFLOAD" ],
         [ "--enable", "CONFIG_XFRM_STATISTICS" ],
@@ -185,6 +184,10 @@
         [ "--module", "CONFIG_XFRM_USER" ],
         [ "--module", "CONFIG_NET_IPIP"],
         [ "--module", "CONFIG_IPV6_TUNNEL"],
+        [ "--module", "CONFIG_NET_IPGRE_DEMUX"],
+        [ "--module", "CONFIG_NET_IP_TUNNEL"],
+        [ "--module", "CONFIG_NET_IPGRE"],
+        [ "--enable", "CONFIG_NET_IPGRE_BROADCAST"],
 
         [ "--module", "CONFIG_BONDING" ],
         [ "--module", "CONFIG_DUMMY" ],
