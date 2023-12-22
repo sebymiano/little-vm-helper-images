@@ -20,7 +20,7 @@ deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https:
 EOF
 
 apt-get update --quiet && apt-get install --quiet --yes --no-install-recommends \
-    docker-ce docker-ce-cli containerd.io
+    docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
 # for iptables 1.8.8
 update-alternatives --set iptables /usr/sbin/iptables-legacy
