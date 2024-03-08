@@ -4,6 +4,8 @@ ARG LVH_IMAGE_TAG=latest
 
 FROM ${LVH_IMAGE_NAME}:"${LVH_IMAGE_TAG}" AS lvh
 
+# rebuild: 20240130.185336
+
 FROM ubuntu:rolling
 
 COPY --from=lvh /usr/bin/lvh /usr/bin/lvh

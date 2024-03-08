@@ -3,11 +3,17 @@ set -euxo pipefail
 
 . /etc/profile
 
-curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+# renovate: datasource=github-releases depName=kubernetes/kubernetes
+KUBECTL_VERSION=1.29.2
+ARCH=$(dpkg --print-architecture)
 
-cat > /etc/apt/sources.list.d/kubernetes.list <<EOF
-deb [arch=amd64] https://apt.kubernetes.io/ kubernetes-xenial main
-EOF
+curl -LO "https://dl.k8s.io/release/v$KUBECTL_VERSION/bin/linux/$ARCH/kubectl"
 
-apt-get update --quiet && apt-get install --quiet --yes --no-install-recommends \
-    kubectl
+# validate the binary
+curl -LO "https://dl.k8s.io/release/v$KUBECTL_VERSION/bin/linux/$ARCH/kubectl.sha256"
+echo "$(cat kubectl.sha256)  kubectl" | sha256sum --check
+
+sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+
+# remove temp files
+rm kubectl kubectl.sha256

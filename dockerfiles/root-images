@@ -2,13 +2,14 @@
 
 # force-rebuild: 1
 
-ARG ROOT_BUILDER_TAG=20230707.160728
+ARG ROOT_BUILDER_TAG=20240201.145448
 
 ARG ROOT_BUILDER_NAME=quay.io/lvh-images/root-builder-ci
 
 FROM ${ROOT_BUILDER_NAME}:"${ROOT_BUILDER_TAG}" AS builder
 
 COPY _data /data
+RUN lvh version
 # mmdebstrap outputs messages in stderr, so we redirect stderr
 RUN lvh images build --dir /data 2>&1
 RUN zstd --compress --rm --threads=0 /data/images/*.qcow2

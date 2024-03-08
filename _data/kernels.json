@@ -9,6 +9,10 @@
             "url": "git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git?depth=1#linux-6.2.y"
         },
         {
+            "name": "6.6",
+            "url": "git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git?depth=1#linux-6.6.y"
+        },
+        {
             "name": "6.1",
             "url": "git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git?depth=1#linux-6.1.y"
         },
@@ -31,6 +35,16 @@
         {
             "name": "4.19",
             "url": "git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git?depth=1#linux-4.19.y"
+        },
+        {
+            "name": "rhel8",
+            "opts": [
+                 [ "--enable",  "CONFIG_EXT4_FS"],
+                 [ "--disable", "CONFIG_SECURITY_APPARMOR"],
+                 [ "--disable", "CONFIG_MODULE_SIG"],
+                 [ "--disable", "CONFIG_MODULE_SIG_ALL"],
+                 [ "--disable", "CONFIG_IPV6_SEG6_LWTUNNEL" ]
+            ]
         }
     ],
     "common_opts": [
@@ -105,6 +119,9 @@
         [ "--enable", "CONFIG_VIRTIO_PCI_LIB" ],
         [ "--enable", "CONFIG_VIRTIO_PCI" ],
         [ "--enable", "CONFIG_VIRTIO" ],
+        [ "--enable", "CONFIG_FUNCTION_ERROR_INJECTION"],
+        [ "--enable", "CONFIG_BPF_KPROBE_OVERRIDE" ],
+        [ "--enable", "CONFIG_FPROBE" ],
         [ "--module", "CONFIG_NET_SCH_INGRESS" ],
         [ "--module", "CONFIG_NETDEVSIM" ],
         [ "--module", "CONFIG_NETFILTER_XT_MATCH_BPF" ],
@@ -117,6 +134,8 @@
         [ "--enable", "CONFIG_IP_VS" ],
         [ "--enable", "CONFIG_NETFILTER_ADVANCED" ],
         [ "--enable", "CONFIG_NF_CONNTRACK" ],
+        [ "--enable", "CONFIG_NF_FLOW_TABLE" ],
+        [ "--enable", "CONFIG_NF_TABLES" ],
         [ "--enable", "CONFIG_VETH" ],
         [ "--module", "CONFIG_BRIDGE_NETFILTER" ],
         [ "--module", "CONFIG_IP_NF_FILTER" ],
@@ -129,6 +148,9 @@
         [ "--module", "CONFIG_NF_NAT" ],
         [ "--module", "CONFIG_NETFILTER_XT_MATCH_RECENT" ],
         [ "--module", "CONFIG_NETFILTER_XT_MATCH_PHYSDEV" ],
+        [ "--enable", "CONFIG_NF_SOCKET_IPV4" ],
+        [ "--enable", "CONFIG_NF_SOCKET_IPV6" ],
+        [ "--module", "CONFIG_NETFILTER_XT_MATCH_SOCKET" ],
 
         [ "--module", "CONFIG_IP_NF_TARGET_REDIRECT" ],
         [ "--module", "CONFIG_NETFILTER_XT_MATCH_COMMENT" ],
@@ -157,6 +179,7 @@
         [ "--module", "CONFIG_NETFILTER_XT_TARGET_CT" ],
         [ "--module", "CONFIG_NETFILTER_XT_TARGET_TPROXY" ],
         [ "--module", "CONFIG_VXLAN" ],
+        [ "--module", "CONFIG_MACVLAN" ],
         [ "--module", "CONFIG_IP_NF_IPTABLES" ],
         [ "--module", "CONFIG_IP6_NF_IPTABLES" ],
 
@@ -217,6 +240,7 @@
         [ "--enable", "CONFIG_IP_VS_PROTO_UDP" ],
         [ "--enable", "CONFIG_IP_VS_RR" ],
         [ "--enable", "CONFIG_SECURITY_APPARMOR" ],
+        [ "--enable", "CONFIG_SECURITY_PATH" ],
         [ "--enable", "CONFIG_PARAVIRT" ],
         [ "--enable", "CONFIG_HYPERVISOR_GUEST" ],
         [ "--enable", "CONFIG_KVM_GUEST" ],
@@ -226,6 +250,9 @@
         [ "--enable", "CONFIG_IP_ADVANCED_ROUTER"],
         [ "--enable", "IP_MULTIPLE_TABLES"],
         [ "--enable", "IPV6_MULTIPLE_TABLES"],
+        [ "--enable", "CONFIG_NET_L3_MASTER_DEV"],
+        [ "--module", "CONFIG_NET_VRF"],
+        [ "--enable", "CONFIG_IPV6_SEG6_LWTUNNEL" ],
 
         [ "--enable", "CONFIG_INET_DIAG"],
         [ "--enable", "CONFIG_INET_UDP_DIAG"],

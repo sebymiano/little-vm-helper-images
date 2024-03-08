@@ -1,7 +1,7 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:base",
+    "config:recommended",
     ":gitSignOff",
     "helpers:pinGitHubActionDigests"
   ],
@@ -9,8 +9,10 @@
   "gitAuthor": "renovate[bot] <bot@renovateapp.com>",
   "includePaths": [
     ".github/workflows/**",
+    "_data/bootstrap/bpf-tools.sh",
     "_data/bootstrap/golang.sh",
-    "_data/bootstrap/kind.sh"
+    "_data/bootstrap/kind.sh",
+    "_data/bootstrap/deb-k8s.sh"
   ],
   "pinDigests": true,
   "ignorePresets": [":prHourlyLimit2"],
@@ -33,7 +35,7 @@
     {
       "groupName": "all github action dependencies",
       "groupSlug": "all-github-action",
-      "matchPaths": [
+      "matchFileNames": [
         ".github/workflows/**"
       ],
       "matchUpdateTypes": [
@@ -45,14 +47,19 @@
         "pinDigest"
       ],
       // Don't build images for PRs updating Github actions only
-      "addLabels": "gha-builds/just-dont"
+      "addLabels": [
+      	"gha-builds/just-dont",
+      ],
     },
   ],
-  "regexManagers": [
+  "customManagers": [
     {
+      "customType": "regex",
       "fileMatch": [
-        "^_data/bootstrap/golang\.sh$",
-        "^_data/bootstrap/kind\.sh$"
+        "^_data/bootstrap/bpf-tools\\.sh$",
+        "^_data/bootstrap/golang\\.sh$",
+        "^_data/bootstrap/kind\\.sh$",
+        "^_data/bootstrap/deb-k8s\\.sh$"
       ],
       // This regex manages version strings in bootstrap files,
       // similar to the examples shown here:

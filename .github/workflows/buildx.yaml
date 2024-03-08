@@ -57,7 +57,7 @@ jobs:
         name: kernel versions
         with:
           script: |
-              var all_kernels = ['4.19', '5.4', '5.10', '5.15', '6.1', 'bpf-next' ]
+              var all_kernels = ['4.19', '5.4', '5.10', '5.15', '6.1', '6.6', 'bpf-next', 'rhel8' ]
               var kernels = []
               const kernel_label_prefix = 'gha-builds/kernel/'
               res = await github.rest.issues.listLabelsOnIssue({
@@ -77,7 +77,17 @@ jobs:
               if (kernels.length == 0) {
                   kernels = all_kernels
               }
-              return kernels
+
+              ret = []
+              for (const k of kernels) {
+                  if (k == "rhel8") {
+                    dockerfile = "dockerfiles/kernel-images-rhel8"
+                  } else {
+                    dockerfile = "dockerfiles/kernel-images"
+                  }
+                  ret.push({"ver": k, "dockerfile": dockerfile})
+              }
+              return ret
       - name: configure
         id: configure
         run: |
@@ -112,18 +122,18 @@ jobs:
     uses: ./.github/workflows/buildx-stage.yaml
     secrets: inherit
     with:
-     name: kernel-image-${{ matrix.kernel }}
-     build-file: dockerfiles/kernel-images
-     build-tag: quay.io/lvh-images/kernel-images-ci:${{ matrix.kernel }}-${{ needs.conf.outputs.tag }}
+     name: kernel-image-${{ matrix.kernel.ver }}
+     build-file: ${{ matrix.kernel.dockerfile }}
+     build-tag: quay.io/lvh-images/kernel-images-ci:${{ matrix.kernel.ver }}-${{ needs.conf.outputs.tag }}
      build-args: |
-          "KERNEL_VER=${{ matrix.kernel }}"
+          "KERNEL_VER=${{ matrix.kernel.ver }}"
      check-files: '.'
      base-ref: ${{ github.base_ref }}
      dry-run: ${{ needs.conf.outputs.dry-run == 'y' }}
      apply-patch: kernel-builder.patch
      patch-cmd: |
          mkdir -p versions/kernel-images
-         echo ${{ needs.conf.outputs.tag}} > versions/kernel-images/${{ matrix.kernel }}
+         echo ${{ needs.conf.outputs.tag}} > versions/kernel-images/${{ matrix.kernel.ver }}
 
   root-builder:
     needs: [conf]
@@ -167,20 +177,20 @@ jobs:
     uses: ./.github/workflows/buildx-stage.yaml
     secrets: inherit
     with:
-     name: kind-image-${{ matrix.kernel }}
+     name: kind-image-${{ matrix.kernel.ver }}
      build-file: dockerfiles/kind-images
-     build-tag: quay.io/lvh-images/kind-ci:${{ matrix.kernel }}-${{ needs.conf.outputs.tag }}
+     build-tag: quay.io/lvh-images/kind-ci:${{ matrix.kernel.ver }}-${{ needs.conf.outputs.tag }}
      build-args: |
-          "KERNEL_VER=${{ matrix.kernel }}"
-          "KERNEL_IMAGE_TAG=${{ matrix.kernel }}-${{ needs.conf.outputs.tag }}"
+          "KERNEL_VER=${{ matrix.kernel.ver }}"
+          "KERNEL_IMAGE_TAG=${{ matrix.kernel.ver }}-${{ needs.conf.outputs.tag }}"
      check-files: '.'
      base-ref: ${{ github.base_ref }}
      dry-run: ${{ needs.conf.outputs.dry-run == 'y' }}
      apply-patch: root-images.patch
-     apply-patch-2: kernel-image-${{ matrix.kernel }}.patch
+     apply-patch-2: kernel-image-${{ matrix.kernel.ver }}.patch
      patch-cmd: |
          mkdir -p versions/kind
-         echo ${{ needs.conf.outputs.tag}} > versions/kind/${{ matrix.kernel }}
+         echo ${{ needs.conf.outputs.tag}} > versions/kind/${{ matrix.kernel.ver }}
 
   complexity-test-images:
     if: ${{ needs.conf.outputs.run == 'y' }}
@@ -191,20 +201,20 @@ jobs:
     uses: ./.github/workflows/buildx-stage.yaml
     secrets: inherit
     with:
-     name: complexity-test-${{ matrix.kernel }}
+     name: complexity-test-${{ matrix.kernel.ver }}
      build-file: dockerfiles/complexity-test-images
-     build-tag: quay.io/lvh-images/complexity-test-ci:${{ matrix.kernel }}-${{ needs.conf.outputs.tag }}
+     build-tag: quay.io/lvh-images/complexity-test-ci:${{ matrix.kernel.ver }}-${{ needs.conf.outputs.tag }}
      build-args: |
-          "KERNEL_VER=${{ matrix.kernel }}"
-          "KERNEL_IMAGE_TAG=${{ matrix.kernel }}-${{ needs.conf.outputs.tag }}"
+          "KERNEL_VER=${{ matrix.kernel.ver }}"
+          "KERNEL_IMAGE_TAG=${{ matrix.kernel.ver }}-${{ needs.conf.outputs.tag }}"
      check-files: '.'
      base-ref: ${{ github.base_ref }}
      dry-run: ${{ needs.conf.outputs.dry-run == 'y' }}
      apply-patch: root-images.patch
-     apply-patch-2: kernel-image-${{ matrix.kernel }}.patch
+     apply-patch-2: kernel-image-${{ matrix.kernel.ver }}.patch
      patch-cmd: |
          mkdir -p versions/complexity-test
-         echo ${{ needs.conf.outputs.tag}} > versions/complexity-test/${{ matrix.kernel }}
+         echo ${{ needs.conf.outputs.tag}} > versions/complexity-test/${{ matrix.kernel.ver }}
 
   commit-changes:
     if: ${{ needs.conf.outputs.run == 'y' }}
@@ -218,9 +228,9 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.ref }}
       - name: download all artifacts
-        uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
+        uses: actions/download-artifact@c850b930e6ba138125429b7e5c93fc707a7f8427 # v4.1.4
         with:
-           path: /tmp/artifacts
+          path: /tmp/artifacts
       - name: push new version
         id: push
         run: |
@@ -293,6 +303,7 @@ jobs:
           echo "| --- | --- |" >> /tmp/image-log
           sudo mkdir /_images; sudo chmod 777 /_images
           for f in $(find . -type f ); do
+            df -h /
             v=$(basename $f)
             tag=$(cat $f)
             image="quay.io/lvh-images/kind-ci:$v-$tag"
@@ -307,6 +318,7 @@ jobs:
             linux_ver=$(cat /tmp/expect.log | sed -ne 's/^.*Linux version \([^ ]\+\).*$/\1/p')
             echo "| ${image} | ${linux_ver} |" | tee -a /tmp/image-log
             rm /_images/*
+            docker image prune -a -f
           done
           echo 'IMAGE_LOG<<EOF' >> $GITHUB_ENV
           cat /tmp/image-log >> $GITHUB_ENV

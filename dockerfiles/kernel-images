@@ -1,6 +1,6 @@
 # vim: set ft=dockerfile:
 
-ARG KERNEL_BUILDER_TAG=20231017.111512
+ARG KERNEL_BUILDER_TAG=20240201.145448
 
 ARG KERNEL_BUILDER_NAME=quay.io/lvh-images/kernel-builder-ci
 
@@ -9,6 +9,7 @@ FROM ${KERNEL_BUILDER_NAME}:"${KERNEL_BUILDER_TAG}" AS builder
 ARG KERNEL_VER=bpf-next
 COPY _data /data
 WORKDIR /data
+RUN lvh version
 # NB: logrus sends everything to stderr it seems, so redirect it to stdout
 RUN lvh kernels --dir . fetch     2>&1 ${KERNEL_VER}
 RUN lvh kernels --dir . configure 2>&1 ${KERNEL_VER}
