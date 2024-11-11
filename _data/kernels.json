@@ -1,8 +1,34 @@
 {
     "kernels": [
         {
-            "name": "bpf_next",
-            "url": "git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git?depth=1"
+            "name": "bpf-next",
+            "url": "git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git?depth=1",
+            "opts": [
+                [
+                    "--enable",
+                    "CONFIG_NETKIT"
+                ]
+            ]
+        },
+        {
+            "name": "bpf",
+            "url": "git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git?depth=1",
+            "opts": [
+                [
+                    "--enable",
+                    "CONFIG_NETKIT"
+                ]
+            ]
+        },
+        {
+            "name": "bpf-net",
+            "url": "git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git?depth=1#net",
+            "opts": [
+                [
+                    "--enable",
+                    "CONFIG_NETKIT"
+                ]
+            ]
         },
         {
             "name": "6.2",
@@ -39,231 +65,1041 @@
         {
             "name": "rhel8",
             "opts": [
-                 [ "--enable",  "CONFIG_EXT4_FS"],
-                 [ "--disable", "CONFIG_SECURITY_APPARMOR"],
-                 [ "--disable", "CONFIG_MODULE_SIG"],
-                 [ "--disable", "CONFIG_MODULE_SIG_ALL"],
-                 [ "--disable", "CONFIG_IPV6_SEG6_LWTUNNEL" ]
+                [
+                    "--enable",
+                    "CONFIG_EXT4_FS"
+                ],
+                [
+                    "--disable",
+                    "CONFIG_SECURITY_APPARMOR"
+                ],
+                [
+                    "--disable",
+                    "CONFIG_MODULE_SIG"
+                ],
+                [
+                    "--disable",
+                    "CONFIG_MODULE_SIG_ALL"
+                ],
+                [
+                    "--disable",
+                    "CONFIG_IPV6_SEG6_LWTUNNEL"
+                ],
+                [
+                    "--enable",
+                    "CONFIG_RANDOMIZE_BASE"
+                ],
+                [
+                    "--enable",
+                    "CONFIG_RELOCATABLE"
+                ]
             ]
         }
     ],
     "common_opts": [
-        [ "--disable", "CONFIG_AGP" ],
-        [ "--disable", "CONFIG_CFG80211" ],
-        [ "--disable", "CONFIG_DMADEVICES" ],
-        [ "--disable", "CONFIG_DRM" ],
-        [ "--disable", "CONFIG_GPU" ],
-        [ "--disable", "CONFIG_HID" ],
-        [ "--disable", "CONFIG_I2C" ],
-        [ "--disable", "CONFIG_ISO9669_FS" ],
-        [ "--disable", "CONFIG_LUSTRE_FS" ],
-        [ "--disable", "CONFIG_MACINTOSH_DRIVERS" ],
-        [ "--disable", "CONFIG_MD" ],
-        [ "--disable", "CONFIG_PCMCIA" ],
-        [ "--disable", "CONFIG_RFKILL" ],
-        [ "--disable", "CONFIG_SOUND" ],
-        [ "--disable", "CONFIG_SYSTEM_REVOCATION_KEYS" ],
-        [ "--disable", "CONFIG_SYSTEM_TRUSTED_KEYS" ],
-        [ "--disable", "CONFIG_THERMAL" ],
-        [ "--disable", "CONFIG_USB_SUPPORT" ],
-        [ "--disable", "CONFIG_USB" ],
-        [ "--disable", "CONFIG_WERROR" ],
-        [ "--disable", "CONFIG_WIRELESS" ],
-        [ "--disable", "CONFIG_WLAN" ],
-        [ "--enable", "CONFIG_9P_FS" ],
-        [ "--enable", "CONFIG_BPF_EVENTS" ],
-        [ "--enable", "CONFIG_BPF_JIT_DEFAULT_ON" ],
-        [ "--enable", "CONFIG_BPF_JIT" ],
-        [ "--enable", "CONFIG_BPF_LSM" ],
-        [ "--enable", "CONFIG_BPF_STREAM_PARSER" ],
-        [ "--enable", "CONFIG_BPF_SYSCALL" ],
-        [ "--enable", "CONFIG_BPF" ],
-        [ "--enable", "CONFIG_CGROUP_BPF" ],
-        [ "--enable", "CONFIG_CGROUP_DEVICE" ],
-        [ "--enable", "CONFIG_CGROUP_PIDS" ],
-        [ "--enable", "CONFIG_DEBUG_INFO_BTF_MODULES" ],
-        [ "--enable", "CONFIG_DEBUG_INFO_BTF" ],
-        [ "--enable", "CONFIG_PAHOLE_HAS_SPLIT_BTF" ],
-        [ "--enable", "CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT" ],
-        [ "--enable", "CONFIG_DEBUG_INFO" ],
-        [ "--enable", "CONFIG_FTRACE_SYSCALLS" ],
-        [ "--enable", "CONFIG_FUNCTION_TRACER" ],
-        [ "--enable", "CONFIG_DYNAMIC_FTRACE" ],
-        [ "--enable", "CONFIG_DYNAMIC_FTRACE_WITH_REGS" ],
-        [ "--enable", "CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS" ],
-        [ "--enable", "CONFIG_DYNAMIC_FTRACE_WITH_ARGS" ],
-        [ "--enable", "CONFIG_HAVE_BPF_JIT" ],
-        [ "--enable", "CONFIG_HAVE_EBPF_JIT" ],
-        [ "--enable", "CONFIG_IPC_NS" ],
-        [ "--enable", "CONFIG_LOCALVERSION_AUTO" ],
-        [ "--enable", "CONFIG_LWTUNNEL" ],
-        [ "--enable", "CONFIG_LWTUNNEL_BPF" ],
-        [ "--enable", "CONFIG_MEMCG" ],
-        [ "--enable", "CONFIG_MEMCG_SWAP" ],
-        [ "--enable", "CONFIG_NAMESPACES" ],
-        [ "--enable", "CONFIG_NET_9P_VIRTIO" ],
-        [ "--enable", "CONFIG_NET_9P" ],
-        [ "--enable", "CONFIG_NET_ACT_BPF" ],
-        [ "--enable", "CONFIG_NET_CLS_ACT" ],
-        [ "--enable", "CONFIG_NET_CLS_BPF" ],
-        [ "--enable", "CONFIG_NET_NS" ],
-        [ "--enable", "CONFIG_NET_TC_SKB_EXT" ],
-        [ "--enable", "CONFIG_PID_NS" ],
-        [ "--enable", "CONFIG_SKB_EXTENSIONS" ],
-        [ "--enable", "CONFIG_TIME_NS" ],
-        [ "--enable", "CONFIG_USER_NS" ],
-        [ "--enable", "CONFIG_UTS_NS" ],
-        [ "--enable", "CONFIG_VIRTIO_BLK" ],
-        [ "--enable", "CONFIG_VIRTIO_MENU" ],
-        [ "--enable", "CONFIG_VIRTIO_NET" ],
-        [ "--enable", "CONFIG_VIRTIO_PCI_LIB" ],
-        [ "--enable", "CONFIG_VIRTIO_PCI" ],
-        [ "--enable", "CONFIG_VIRTIO" ],
-        [ "--enable", "CONFIG_FUNCTION_ERROR_INJECTION"],
-        [ "--enable", "CONFIG_BPF_KPROBE_OVERRIDE" ],
-        [ "--enable", "CONFIG_FPROBE" ],
-        [ "--module", "CONFIG_NET_SCH_INGRESS" ],
-        [ "--module", "CONFIG_NETDEVSIM" ],
-        [ "--module", "CONFIG_NETFILTER_XT_MATCH_BPF" ],
-        [ "--module", "CONFIG_TEST_BPF" ],
-        [ "--module", "CONFIG_TLS" ],
-        [ "--module", "CONFIG_WIREGUARD" ],
-
-        [ "--enable", "CONFIG_BRIDGE" ],
-        [ "--enable", "CONFIG_DM_THIN_PROVISIONING" ],
-        [ "--enable", "CONFIG_IP_VS" ],
-        [ "--enable", "CONFIG_NETFILTER_ADVANCED" ],
-        [ "--enable", "CONFIG_NF_CONNTRACK" ],
-        [ "--enable", "CONFIG_NF_FLOW_TABLE" ],
-        [ "--enable", "CONFIG_NF_TABLES" ],
-        [ "--enable", "CONFIG_VETH" ],
-        [ "--module", "CONFIG_BRIDGE_NETFILTER" ],
-        [ "--module", "CONFIG_IP_NF_FILTER" ],
-        [ "--module", "CONFIG_IP_NF_NAT" ],
-        [ "--module", "CONFIG_IP_NF_TARGET_MASQUERADE" ],
-        [ "--module", "CONFIG_NETFILTER_XT_MARK" ],
-        [ "--module", "CONFIG_NETFILTER_XT_MATCH_ADDRTYPE" ],
-        [ "--module", "CONFIG_NETFILTER_XT_MATCH_CONNTRACK" ],
-        [ "--module", "CONFIG_NETFILTER_XT_MATCH_IPVS" ],
-        [ "--module", "CONFIG_NF_NAT" ],
-        [ "--module", "CONFIG_NETFILTER_XT_MATCH_RECENT" ],
-        [ "--module", "CONFIG_NETFILTER_XT_MATCH_PHYSDEV" ],
-        [ "--enable", "CONFIG_NF_SOCKET_IPV4" ],
-        [ "--enable", "CONFIG_NF_SOCKET_IPV6" ],
-        [ "--module", "CONFIG_NETFILTER_XT_MATCH_SOCKET" ],
-
-        [ "--module", "CONFIG_IP_NF_TARGET_REDIRECT" ],
-        [ "--module", "CONFIG_NETFILTER_XT_MATCH_COMMENT" ],
-
-        [ "--enable", "CONFIG_IP_NF_TARGET_REJECT" ],
-        [ "--enable", "CONFIG_IP6_NF_TARGET_REJECT" ],
-        [ "--module", "CONFIG_NETFILTER_XT_MATCH_STATISTIC" ],
-        [ "--module", "CONFIG_IP_VS_RR" ],
-        [ "--module", "CONFIG_IP_VS_WRR" ],
-        [ "--module", "CONFIG_IP_VS_SH" ],
-
-        [ "--enable", "CONFIG_IP_NF_MANGLE" ],
-        [ "--enable", "CONFIG_IP_NF_RAW" ],
-        [ "--enable", "CONFIG_IP6_NF_FILTER" ],
-        [ "--enable", "CONFIG_IP6_NF_MANGLE" ],
-        [ "--enable", "CONFIG_IP6_NF_NAT" ],
-        [ "--enable", "CONFIG_IP6_NF_RAW" ],
-        [ "--enable", "CONFIG_IP6_NF_TARGET_MASQUERADE" ],
-        [ "--module", "CONFIG_GENEVE" ],
-        [ "--module", "CONFIG_IP_SET_HASH_IP" ],
-        [ "--module", "CONFIG_IP_SET" ],
-        [ "--module", "CONFIG_NET_SCH_FQ" ],
-        [ "--module", "CONFIG_NETFILTER_XT_MATCH_MARK" ],
-        [ "--module", "CONFIG_NETFILTER_XT_MATCH_SOCKET" ],
-        [ "--module", "CONFIG_NETFILTER_XT_SET" ],
-        [ "--module", "CONFIG_NETFILTER_XT_TARGET_CT" ],
-        [ "--module", "CONFIG_NETFILTER_XT_TARGET_TPROXY" ],
-        [ "--module", "CONFIG_VXLAN" ],
-        [ "--module", "CONFIG_MACVLAN" ],
-        [ "--module", "CONFIG_IP_NF_IPTABLES" ],
-        [ "--module", "CONFIG_IP6_NF_IPTABLES" ],
-
-        [ "--enable", "CONFIG_XFRM_OFFLOAD" ],
-        [ "--enable", "CONFIG_XFRM_STATISTICS" ],
-        [ "--enable", "CONFIG_XFRM" ],
-        [ "--module", "CONFIG_CRYPTO_AEAD" ],
-        [ "--module", "CONFIG_CRYPTO_AEAD2" ],
-        [ "--module", "CONFIG_CRYPTO_AES" ],
-        [ "--module", "CONFIG_CRYPTO_CBC" ],
-        [ "--module", "CONFIG_CRYPTO_GCM" ],
-        [ "--module", "CONFIG_CRYPTO_HMAC" ],
-        [ "--module", "CONFIG_CRYPTO_SEQIV" ],
-        [ "--module", "CONFIG_CRYPTO_SHA256" ],
-        [ "--module", "CONFIG_INET_ESP" ],
-        [ "--module", "CONFIG_INET_IPCOMP" ],
-        [ "--module", "CONFIG_INET_TUNNEL" ],
-        [ "--module", "CONFIG_INET_XFRM_MODE_TUNNEL" ],
-        [ "--module", "CONFIG_INET_XFRM_TUNNEL" ],
-        [ "--module", "CONFIG_INET6_ESP" ],
-        [ "--module", "CONFIG_INET6_IPCOMP" ],
-        [ "--module", "CONFIG_INET6_TUNNEL" ],
-        [ "--module", "CONFIG_INET6_XFRM_TUNNEL" ],
-        [ "--module", "CONFIG_XFRM_ALGO" ],
-        [ "--module", "CONFIG_XFRM_USER" ],
-        [ "--module", "CONFIG_NET_IPIP"],
-        [ "--module", "CONFIG_IPV6_TUNNEL"],
-        [ "--module", "CONFIG_NET_IPGRE_DEMUX"],
-        [ "--module", "CONFIG_NET_IP_TUNNEL"],
-        [ "--module", "CONFIG_NET_IPGRE"],
-        [ "--enable", "CONFIG_NET_IPGRE_BROADCAST"],
-
-        [ "--module", "CONFIG_BONDING" ],
-        [ "--module", "CONFIG_DUMMY" ],
-        [ "--module", "CONFIG_NF_CT_NETLINK" ],
-        [ "--module", "CONFIG_VLAN_8021Q" ],
-
-        [ "--enable", "CONFIG_SCTP_COOKIE_HMAC_MD5" ],
-        [ "--enable", "CONFIG_SCTP_COOKIE_HMAC_SHA1" ],
-        [ "--enable", "CONFIG_SCTP_DEFAULT_COOKIE_HMAC_SHA1" ],
-        [ "--module", "CONFIG_IP_SCTP" ],
-
-        [ "--module", "CONFIG_NETFILTER_XT_MATCH_OWNER" ],
-        [ "--module", "CONFIG_NETFILTER_XT_TARGET_CONNMARK" ],
-
-        [ "--module", "CONFIG_OVERLAY_FS" ],
-
-        [ "--enable", "CONFIG_BLK_CGROUP" ],
-        [ "--enable", "CONFIG_BLK_DEV_THROTTLING" ],
-        [ "--enable", "CONFIG_CGROUP_PERF" ],
-        [ "--enable", "CONFIG_CGROUP_HUGETLB" ],
-        [ "--enable", "CONFIG_NET_CLS_CGROUP" ],
-        [ "--enable", "CONFIG_CGROUP_NET_PRIO" ],
-        [ "--enable", "CONFIG_CFS_BANDWIDTH" ],
-        [ "--enable", "CONFIG_RT_GROUP_SCHED" ],
-        [ "--enable", "CONFIG_IP_VS_NFCT" ],
-        [ "--enable", "CONFIG_IP_VS_PROTO_TCP" ],
-        [ "--enable", "CONFIG_IP_VS_PROTO_UDP" ],
-        [ "--enable", "CONFIG_IP_VS_RR" ],
-        [ "--enable", "CONFIG_SECURITY_APPARMOR" ],
-        [ "--enable", "CONFIG_SECURITY_PATH" ],
-        [ "--enable", "CONFIG_PARAVIRT" ],
-        [ "--enable", "CONFIG_HYPERVISOR_GUEST" ],
-        [ "--enable", "CONFIG_KVM_GUEST" ],
-        [ "--enable", "CONFIG_IKCONFIG"],
-        [ "--enable", "CONFIG_IKCONFIG_PROC"],
-
-        [ "--enable", "CONFIG_IP_ADVANCED_ROUTER"],
-        [ "--enable", "IP_MULTIPLE_TABLES"],
-        [ "--enable", "IPV6_MULTIPLE_TABLES"],
-        [ "--enable", "CONFIG_NET_L3_MASTER_DEV"],
-        [ "--module", "CONFIG_NET_VRF"],
-        [ "--enable", "CONFIG_IPV6_SEG6_LWTUNNEL" ],
-
-        [ "--enable", "CONFIG_INET_DIAG"],
-        [ "--enable", "CONFIG_INET_UDP_DIAG"],
-        [ "--enable", "CONFIG_INET_DIAG_DESTROY"],
-
-        [ "--enable", "CONFIG_INTEGRITY"],
-        [ "--enable", "CONFIG_IMA"],
-        [ "--enable", "CONFIG_IMA_MEASURE_PCR_IDX"],
-        [ "--enable", "CONFIG_IMA_AUDIT"],
-        [ "--enable", "CONFIG_IMA_LSM_RULES"],
-        [ "--enable", "CONFIG_INTEGRITY_SIGNATURE"],
-        [ "--enable", "CONFIG_IMA_APPRAISE"]
+        [
+            "--disable",
+            "CONFIG_AGP"
+        ],
+        [
+            "--disable",
+            "CONFIG_CFG80211"
+        ],
+        [
+            "--disable",
+            "CONFIG_DMADEVICES"
+        ],
+        [
+            "--disable",
+            "CONFIG_DRM"
+        ],
+        [
+            "--disable",
+            "CONFIG_GPU"
+        ],
+        [
+            "--disable",
+            "CONFIG_HID"
+        ],
+        [
+            "--disable",
+            "CONFIG_I2C"
+        ],
+        [
+            "--disable",
+            "CONFIG_ISO9669_FS"
+        ],
+        [
+            "--disable",
+            "CONFIG_LUSTRE_FS"
+        ],
+        [
+            "--disable",
+            "CONFIG_MACINTOSH_DRIVERS"
+        ],
+        [
+            "--disable",
+            "CONFIG_MD"
+        ],
+        [
+            "--disable",
+            "CONFIG_PCMCIA"
+        ],
+        [
+            "--disable",
+            "CONFIG_RFKILL"
+        ],
+        [
+            "--disable",
+            "CONFIG_SOUND"
+        ],
+        [
+            "--disable",
+            "CONFIG_SYSTEM_REVOCATION_KEYS"
+        ],
+        [
+            "--disable",
+            "CONFIG_SYSTEM_TRUSTED_KEYS"
+        ],
+        [
+            "--disable",
+            "CONFIG_THERMAL"
+        ],
+        [
+            "--disable",
+            "CONFIG_USB_SUPPORT"
+        ],
+        [
+            "--disable",
+            "CONFIG_USB"
+        ],
+        [
+            "--disable",
+            "CONFIG_WERROR"
+        ],
+        [
+            "--disable",
+            "CONFIG_WIRELESS"
+        ],
+        [
+            "--disable",
+            "CONFIG_WLAN"
+        ],
+        [
+            "--enable",
+            "CONFIG_9P_FS"
+        ],
+        [
+            "--enable",
+            "CONFIG_BPF_EVENTS"
+        ],
+        [
+            "--enable",
+            "CONFIG_BPF_JIT_DEFAULT_ON"
+        ],
+        [
+            "--enable",
+            "CONFIG_BPF_JIT"
+        ],
+        [
+            "--enable",
+            "CONFIG_BPF_LSM"
+        ],
+        [
+            "--enable",
+            "CONFIG_BPF_STREAM_PARSER"
+        ],
+        [
+            "--enable",
+            "CONFIG_BPF_SYSCALL"
+        ],
+        [
+            "--enable",
+            "CONFIG_BPF"
+        ],
+        [
+            "--enable",
+            "CONFIG_CGROUP_BPF"
+        ],
+        [
+            "--enable",
+            "CONFIG_CGROUP_DEVICE"
+        ],
+        [
+            "--enable",
+            "CONFIG_CGROUP_PIDS"
+        ],
+        [
+            "--enable",
+            "CONFIG_DEBUG_INFO_BTF_MODULES"
+        ],
+        [
+            "--enable",
+            "CONFIG_DEBUG_INFO_BTF"
+        ],
+        [
+            "--enable",
+            "CONFIG_PAHOLE_HAS_SPLIT_BTF"
+        ],
+        [
+            "--enable",
+            "CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT"
+        ],
+        [
+            "--enable",
+            "CONFIG_DEBUG_INFO"
+        ],
+        [
+            "--enable",
+            "CONFIG_FTRACE_SYSCALLS"
+        ],
+        [
+            "--enable",
+            "CONFIG_FUNCTION_TRACER"
+        ],
+        [
+            "--enable",
+            "CONFIG_DYNAMIC_FTRACE"
+        ],
+        [
+            "--enable",
+            "CONFIG_DYNAMIC_FTRACE_WITH_REGS"
+        ],
+        [
+            "--enable",
+            "CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS"
+        ],
+        [
+            "--enable",
+            "CONFIG_DYNAMIC_FTRACE_WITH_ARGS"
+        ],
+        [
+            "--enable",
+            "CONFIG_HAVE_EBPF_JIT"
+        ],
+        [
+            "--enable",
+            "CONFIG_IPC_NS"
+        ],
+        [
+            "--enable",
+            "CONFIG_LOCALVERSION_AUTO"
+        ],
+        [
+            "--enable",
+            "CONFIG_LWTUNNEL"
+        ],
+        [
+            "--enable",
+            "CONFIG_LWTUNNEL_BPF"
+        ],
+        [
+            "--enable",
+            "CONFIG_MEMCG"
+        ],
+        [
+            "--enable",
+            "CONFIG_MEMCG_SWAP"
+        ],
+        [
+            "--enable",
+            "CONFIG_NAMESPACES"
+        ],
+        [
+            "--enable",
+            "CONFIG_NET_9P_VIRTIO"
+        ],
+        [
+            "--enable",
+            "CONFIG_NET_9P"
+        ],
+        [
+            "--enable",
+            "CONFIG_NET_ACT_BPF"
+        ],
+        [
+            "--enable",
+            "CONFIG_NET_CLS_ACT"
+        ],
+        [
+            "--enable",
+            "CONFIG_NET_CLS_BPF"
+        ],
+        [
+            "--enable",
+            "CONFIG_NET_NS"
+        ],
+        [
+            "--enable",
+            "CONFIG_NET_TC_SKB_EXT"
+        ],
+        [
+            "--enable",
+            "CONFIG_PID_NS"
+        ],
+        [
+            "--enable",
+            "CONFIG_SKB_EXTENSIONS"
+        ],
+        [
+            "--enable",
+            "CONFIG_TIME_NS"
+        ],
+        [
+            "--enable",
+            "CONFIG_USER_NS"
+        ],
+        [
+            "--enable",
+            "CONFIG_UTS_NS"
+        ],
+        [
+            "--enable",
+            "CONFIG_VIRTIO_BLK"
+        ],
+        [
+            "--enable",
+            "CONFIG_VIRTIO_MENU"
+        ],
+        [
+            "--enable",
+            "CONFIG_VIRTIO_NET"
+        ],
+        [
+            "--enable",
+            "CONFIG_VIRTIO_PCI_LIB"
+        ],
+        [
+            "--enable",
+            "CONFIG_VIRTIO_PCI"
+        ],
+        [
+            "--enable",
+            "CONFIG_VIRTIO"
+        ],
+        [
+            "--enable",
+            "CONFIG_FUNCTION_ERROR_INJECTION"
+        ],
+        [
+            "--enable",
+            "CONFIG_BPF_KPROBE_OVERRIDE"
+        ],
+        [
+            "--enable",
+            "CONFIG_FPROBE"
+        ],
+        [
+            "--module",
+            "CONFIG_NET_SCH_INGRESS"
+        ],
+        [
+            "--module",
+            "CONFIG_NETDEVSIM"
+        ],
+        [
+            "--module",
+            "CONFIG_NETFILTER_XT_MATCH_BPF"
+        ],
+        [
+            "--module",
+            "CONFIG_TEST_BPF"
+        ],
+        [
+            "--module",
+            "CONFIG_TLS"
+        ],
+        [
+            "--module",
+            "CONFIG_WIREGUARD"
+        ],
+        [
+            "--enable",
+            "CONFIG_BRIDGE"
+        ],
+        [
+            "--enable",
+            "CONFIG_DM_THIN_PROVISIONING"
+        ],
+        [
+            "--enable",
+            "CONFIG_IP_VS"
+        ],
+        [
+            "--enable",
+            "CONFIG_NETFILTER_ADVANCED"
+        ],
+        [
+            "--enable",
+            "CONFIG_NF_CONNTRACK"
+        ],
+        [
+            "--enable",
+            "CONFIG_NF_FLOW_TABLE"
+        ],
+        [
+            "--enable",
+            "CONFIG_NF_TABLES"
+        ],
+        [
+            "--enable",
+            "CONFIG_VETH"
+        ],
+        [
+            "--module",
+            "CONFIG_BRIDGE_NETFILTER"
+        ],
+        [
+            "--module",
+            "CONFIG_IP_NF_FILTER"
+        ],
+        [
+            "--module",
+            "CONFIG_IP_NF_NAT"
+        ],
+        [
+            "--module",
+            "CONFIG_IP_NF_TARGET_MASQUERADE"
+        ],
+        [
+            "--module",
+            "CONFIG_NETFILTER_XT_MARK"
+        ],
+        [
+            "--module",
+            "CONFIG_NETFILTER_XT_MATCH_ADDRTYPE"
+        ],
+        [
+            "--module",
+            "CONFIG_NETFILTER_XT_MATCH_CONNTRACK"
+        ],
+        [
+            "--module",
+            "CONFIG_NETFILTER_XT_MATCH_IPVS"
+        ],
+        [
+            "--module",
+            "CONFIG_NF_NAT"
+        ],
+        [
+            "--module",
+            "CONFIG_NETFILTER_XT_MATCH_RECENT"
+        ],
+        [
+            "--module",
+            "CONFIG_NETFILTER_XT_MATCH_PHYSDEV"
+        ],
+        [
+            "--enable",
+            "CONFIG_NF_SOCKET_IPV4"
+        ],
+        [
+            "--enable",
+            "CONFIG_NF_SOCKET_IPV6"
+        ],
+        [
+            "--module",
+            "CONFIG_NETFILTER_XT_MATCH_SOCKET"
+        ],
+        [
+            "--module",
+            "CONFIG_IP_NF_TARGET_REDIRECT"
+        ],
+        [
+            "--module",
+            "CONFIG_NETFILTER_XT_MATCH_COMMENT"
+        ],
+        [
+            "--enable",
+            "CONFIG_IP_NF_TARGET_REJECT"
+        ],
+        [
+            "--enable",
+            "CONFIG_IP6_NF_TARGET_REJECT"
+        ],
+        [
+            "--module",
+            "CONFIG_NETFILTER_XT_MATCH_STATISTIC"
+        ],
+        [
+            "--module",
+            "CONFIG_IP_VS_RR"
+        ],
+        [
+            "--module",
+            "CONFIG_IP_VS_WRR"
+        ],
+        [
+            "--module",
+            "CONFIG_IP_VS_SH"
+        ],
+        [
+            "--enable",
+            "CONFIG_IP_NF_MANGLE"
+        ],
+        [
+            "--enable",
+            "CONFIG_IP_NF_RAW"
+        ],
+        [
+            "--enable",
+            "CONFIG_IP6_NF_FILTER"
+        ],
+        [
+            "--enable",
+            "CONFIG_IP6_NF_MANGLE"
+        ],
+        [
+            "--enable",
+            "CONFIG_IP6_NF_NAT"
+        ],
+        [
+            "--enable",
+            "CONFIG_IP6_NF_RAW"
+        ],
+        [
+            "--enable",
+            "CONFIG_IP6_NF_TARGET_MASQUERADE"
+        ],
+        [
+            "--module",
+            "CONFIG_GENEVE"
+        ],
+        [
+            "--module",
+            "CONFIG_IP_SET_HASH_IP"
+        ],
+        [
+            "--module",
+            "CONFIG_IP_SET"
+        ],
+        [
+            "--module",
+            "CONFIG_NET_SCH_FQ"
+        ],
+        [
+            "--module",
+            "CONFIG_NETFILTER_XT_MATCH_MARK"
+        ],
+        [
+            "--module",
+            "CONFIG_NETFILTER_XT_MATCH_SOCKET"
+        ],
+        [
+            "--module",
+            "CONFIG_NETFILTER_XT_SET"
+        ],
+        [
+            "--module",
+            "CONFIG_NETFILTER_XT_TARGET_CT"
+        ],
+        [
+            "--module",
+            "CONFIG_NETFILTER_XT_TARGET_MARK"
+        ],
+        [
+            "--module",
+            "CONFIG_NETFILTER_XT_TARGET_TPROXY"
+        ],
+        [
+            "--module",
+            "CONFIG_VXLAN"
+        ],
+        [
+            "--module",
+            "CONFIG_MACVLAN"
+        ],
+        [
+            "--module",
+            "CONFIG_IP_NF_IPTABLES"
+        ],
+        [
+            "--module",
+            "CONFIG_IP6_NF_IPTABLES"
+        ],
+        [
+            "--enable",
+            "CONFIG_XFRM_OFFLOAD"
+        ],
+        [
+            "--enable",
+            "CONFIG_XFRM_STATISTICS"
+        ],
+        [
+            "--enable",
+            "CONFIG_XFRM"
+        ],
+        [
+            "--module",
+            "CONFIG_CRYPTO_AEAD"
+        ],
+        [
+            "--module",
+            "CONFIG_CRYPTO_AEAD2"
+        ],
+        [
+            "--module",
+            "CONFIG_CRYPTO_AES"
+        ],
+        [
+            "--module",
+            "CONFIG_CRYPTO_CBC"
+        ],
+        [
+            "--module",
+            "CONFIG_CRYPTO_GCM"
+        ],
+        [
+            "--module",
+            "CONFIG_CRYPTO_HMAC"
+        ],
+        [
+            "--module",
+            "CONFIG_CRYPTO_SEQIV"
+        ],
+        [
+            "--module",
+            "CONFIG_CRYPTO_SHA256"
+        ],
+        [
+            "--module",
+            "CONFIG_INET_ESP"
+        ],
+        [
+            "--module",
+            "CONFIG_INET_IPCOMP"
+        ],
+        [
+            "--module",
+            "CONFIG_INET_TUNNEL"
+        ],
+        [
+            "--module",
+            "CONFIG_INET_XFRM_MODE_TUNNEL"
+        ],
+        [
+            "--module",
+            "CONFIG_INET_XFRM_TUNNEL"
+        ],
+        [
+            "--module",
+            "CONFIG_INET6_ESP"
+        ],
+        [
+            "--module",
+            "CONFIG_INET6_IPCOMP"
+        ],
+        [
+            "--module",
+            "CONFIG_INET6_TUNNEL"
+        ],
+        [
+            "--module",
+            "CONFIG_INET6_XFRM_TUNNEL"
+        ],
+        [
+            "--module",
+            "CONFIG_XFRM_ALGO"
+        ],
+        [
+            "--module",
+            "CONFIG_XFRM_USER"
+        ],
+        [
+            "--module",
+            "CONFIG_NET_IPIP"
+        ],
+        [
+            "--module",
+            "CONFIG_IPV6_TUNNEL"
+        ],
+        [
+            "--module",
+            "CONFIG_NET_IPGRE_DEMUX"
+        ],
+        [
+            "--module",
+            "CONFIG_NET_IP_TUNNEL"
+        ],
+        [
+            "--module",
+            "CONFIG_NET_IPGRE"
+        ],
+        [
+            "--enable",
+            "CONFIG_NET_IPGRE_BROADCAST"
+        ],
+        [
+            "--module",
+            "CONFIG_BONDING"
+        ],
+        [
+            "--module",
+            "CONFIG_DUMMY"
+        ],
+        [
+            "--module",
+            "CONFIG_NF_CT_NETLINK"
+        ],
+        [
+            "--module",
+            "CONFIG_VLAN_8021Q"
+        ],
+        [
+            "--enable",
+            "CONFIG_SCTP_COOKIE_HMAC_MD5"
+        ],
+        [
+            "--enable",
+            "CONFIG_SCTP_COOKIE_HMAC_SHA1"
+        ],
+        [
+            "--enable",
+            "CONFIG_SCTP_DEFAULT_COOKIE_HMAC_SHA1"
+        ],
+        [
+            "--module",
+            "CONFIG_IP_SCTP"
+        ],
+        [
+            "--module",
+            "CONFIG_NETFILTER_XT_MATCH_OWNER"
+        ],
+        [
+            "--module",
+            "CONFIG_NETFILTER_XT_TARGET_CONNMARK"
+        ],
+        [
+            "--module",
+            "CONFIG_OVERLAY_FS"
+        ],
+        [
+            "--enable",
+            "CONFIG_BLK_CGROUP"
+        ],
+        [
+            "--enable",
+            "CONFIG_BLK_DEV_THROTTLING"
+        ],
+        [
+            "--enable",
+            "CONFIG_CGROUP_PERF"
+        ],
+        [
+            "--enable",
+            "CONFIG_CGROUP_HUGETLB"
+        ],
+        [
+            "--enable",
+            "CONFIG_NET_CLS_CGROUP"
+        ],
+        [
+            "--enable",
+            "CONFIG_CGROUP_NET_PRIO"
+        ],
+        [
+            "--enable",
+            "CONFIG_CFS_BANDWIDTH"
+        ],
+        [
+            "--enable",
+            "CONFIG_RT_GROUP_SCHED"
+        ],
+        [
+            "--enable",
+            "CONFIG_IP_VS_NFCT"
+        ],
+        [
+            "--enable",
+            "CONFIG_IP_VS_PROTO_TCP"
+        ],
+        [
+            "--enable",
+            "CONFIG_IP_VS_PROTO_UDP"
+        ],
+        [
+            "--enable",
+            "CONFIG_IP_VS_RR"
+        ],
+        [
+            "--enable",
+            "CONFIG_SECURITY_APPARMOR"
+        ],
+        [
+            "--enable",
+            "CONFIG_SECURITY_PATH"
+        ],
+        [
+            "--enable",
+            "CONFIG_PARAVIRT"
+        ],
+        [
+            "--enable",
+            "CONFIG_HYPERVISOR_GUEST"
+        ],
+        [
+            "--enable",
+            "CONFIG_KVM_GUEST"
+        ],
+        [
+            "--enable",
+            "CONFIG_IKCONFIG"
+        ],
+        [
+            "--enable",
+            "CONFIG_IKCONFIG_PROC"
+        ],
+        [
+            "--enable",
+            "CONFIG_IP_ADVANCED_ROUTER"
+        ],
+        [
+            "--enable",
+            "IP_MULTIPLE_TABLES"
+        ],
+        [
+            "--enable",
+            "IPV6_MULTIPLE_TABLES"
+        ],
+        [
+            "--enable",
+            "CONFIG_NET_L3_MASTER_DEV"
+        ],
+        [
+            "--module",
+            "CONFIG_NET_VRF"
+        ],
+        [
+            "--enable",
+            "CONFIG_IPV6_SEG6_LWTUNNEL"
+        ],
+        [
+            "--enable",
+            "CONFIG_INET_DIAG"
+        ],
+        [
+            "--enable",
+            "CONFIG_INET_UDP_DIAG"
+        ],
+        [
+            "--enable",
+            "CONFIG_INET_DIAG_DESTROY"
+        ],
+        [
+            "--enable",
+            "CONFIG_INTEGRITY"
+        ],
+        [
+            "--enable",
+            "CONFIG_IMA"
+        ],
+        [
+            "--enable",
+            "CONFIG_IMA_MEASURE_PCR_IDX"
+        ],
+        [
+            "--enable",
+            "CONFIG_IMA_LSM_RULES"
+        ],
+        [
+            "--enable",
+            "CONFIG_INTEGRITY_SIGNATURE"
+        ],
+        [
+            "--enable",
+            "CONFIG_IMA_APPRAISE"
+        ],
+        [
+            "--disable",
+            "CONFIG_DEBUG_INFO_REDUCED"
+        ],
+        [
+            "--enable",
+            "CONFIG_KPROBES"
+        ],
+        [
+            "--enable",
+            "CONFIG_KPROBE_EVENTS"
+        ],
+        [
+            "--enable",
+            "CONFIG_UPROBE_EVENTS"
+        ],
+        [
+            "--enable",
+            "CONFIG_FTRACE"
+        ],
+        [
+            "--disable",
+            "CONFIG_ARCH_ACTIONS"
+        ],
+        [
+            "--disable",
+            "CONFIG_ARCH_ALPINE"
+        ],
+        [
+            "--disable",
+            "CONFIG_ARCH_APPLE"
+        ],
+        [
+            "--disable",
+            "CONFIG_ARCH_BCM"
+        ],
+        [
+            "--disable",
+            "CONFIG_ARCH_BERLIN"
+        ],
+        [
+            "--disable",
+            "CONFIG_ARCH_BITMAIN"
+        ],
+        [
+            "--disable",
+            "CONFIG_ARCH_EXYNOS"
+        ],
+        [
+            "--disable",
+            "CONFIG_ARCH_HISI"
+        ],
+        [
+            "--disable",
+            "CONFIG_ARCH_INTEL_SOCFPGA"
+        ],
+        [
+            "--disable",
+            "CONFIG_ARCH_K3"
+        ],
+        [
+            "--disable",
+            "CONFIG_ARCH_KEEMBAY"
+        ],
+        [
+            "--disable",
+            "CONFIG_ARCH_NXP"
+        ],
+        [
+            "--disable",
+            "CONFIG_ARCH_LG1K"
+        ],
+        [
+            "--disable",
+            "CONFIG_ARCH_MA35"
+        ],
+        [
+            "--disable",
+            "CONFIG_ARCH_MEDIATEK"
+        ],
+        [
+            "--disable",
+            "CONFIG_ARCH_MESON"
+        ],
+        [
+            "--disable",
+            "CONFIG_ARCH_MVEBU"
+        ],
+        [
+            "--disable",
+            "CONFIG_ARCH_NPCM"
+        ],
+        [
+            "--disable",
+            "CONFIG_ARCH_PENSANDO"
+        ],
+        [
+            "--disable",
+            "CONFIG_ARCH_QCOM"
+        ],
+        [
+            "--disable",
+            "CONFIG_ARCH_REALTEK"
+        ],
+        [
+            "--disable",
+            "CONFIG_ARCH_RENESAS"
+        ],
+        [
+            "--disable",
+            "CONFIG_ARCH_ROCKCHIP"
+        ],
+        [
+            "--disable",
+            "CONFIG_ARCH_SEATTLE"
+        ],
+        [
+            "--disable",
+            "CONFIG_ARCH_SPARX5"
+        ],
+        [
+            "--disable",
+            "CONFIG_ARCH_SPRD"
+        ],
+        [
+            "--disable",
+            "CONFIG_ARCH_STM32"
+        ],
+        [
+            "--disable",
+            "CONFIG_ARCH_SUNXI"
+        ],
+        [
+            "--disable",
+            "CONFIG_ARCH_SYNQUACER"
+        ],
+        [
+            "--disable",
+            "CONFIG_ARCH_TEGRA"
+        ],
+        [
+            "--disable",
+            "CONFIG_ARCH_THUNDER"
+        ],
+        [
+            "--disable",
+            "CONFIG_ARCH_THUNDER2"
+        ],
+        [
+            "--disable",
+            "CONFIG_ARCH_UNIPHIER"
+        ],
+        [
+            "--disable",
+            "CONFIG_ARCH_VEXPRESS"
+        ],
+        [
+            "--disable",
+            "CONFIG_ARCH_VISCONTI"
+        ],
+        [
+            "--disable",
+            "CONFIG_ARCH_XGENE"
+        ],
+        [
+            "--disable",
+            "CONFIG_ARCH_ZYNQMP"
+        ],
+        [
+            "--enable",
+            "CONFIG_X86_X32"
+        ],
+        [
+            "--enable",
+            "CONFIG_EXPERT"
+        ],
+        [
+            "--disable",
+            "CONFIG_EFI"
+        ],
+        [
+            "--disable",
+            "CONFIG_RANDOMIZE_MODULE_REGION_FULL"
+        ],
+        [
+            "--disable",
+            "CONFIG_RANDOMIZE_BASE"
+        ],
+        [
+            "--disable",
+            "CONFIG_RELOCATABLE"
+        ]
     ]
 }

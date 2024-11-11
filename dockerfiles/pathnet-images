@@ -11,14 +11,29 @@ ARG KERNEL_IMAGE_TAG=bpf-next
 ARG ROOT_IMAGES_NAME=quay.io/lvh-images/root-images-ci
 ARG KERNEL_IMAGES_NAME=quay.io/lvh-images/kernel-images-ci
 ARG ROOT_BUILDER_NAME=quay.io/lvh-images/root-builder-ci
+ARG LVH_IMAGE_NAME=quay.io/lvh-images/lvh
+ARG LVH_IMAGE_TAG=latest
 
 FROM ${ROOT_IMAGES_NAME}:"${ROOT_IMAGES_TAG}" AS root-images
 FROM ${KERNEL_IMAGES_NAME}:"${KERNEL_IMAGE_TAG}" AS kimg
-FROM ${ROOT_BUILDER_NAME}:"${ROOT_BUILDER_TAG}" AS builder
+
+FROM ${LVH_IMAGE_NAME}:"${LVH_IMAGE_TAG}" AS lvh
+FROM ubuntu:rolling AS builder
 
 ARG KERNEL_VER=bpf-next
-
 WORKDIR /data
+COPY --from=lvh /usr/bin/lvh /usr/bin/lvh
+RUN apt-get update --quiet && \
+     apt-get upgrade --quiet --yes &&  \
+     apt-get install --quiet --yes --no-install-recommends \
+          zstd qemu-utils libguestfs-tools linux-image-generic
+
+# this might be counter intuitive but without this package (or one of its
+# subpackage), starting qemu with '-device virtio-net-pci,netdev=usernet' will
+# fail with 'failed to find romfile "efi-virtio.rom"'
+ARG TARGETARCH
+RUN if [ "$TARGETARCH" = "arm64" ]; then apt-get install -yq --no-install-recommends qemu-system-x86; fi
+
 COPY --from=kimg /data/kernels /data/kernels
 COPY --from=root-images /data/images/pathnet.qcow2.zst /data/images/pathnet.qcow2.zst
 RUN zstd --decompress --rm --threads=0 /data/images/pathnet.qcow2.zst
@@ -42,10 +57,10 @@ COPY <<EOF /data/images.json
 ]
 EOF
 
+RUN lvh version
 # mmdebstrap outputs messages in stderr, so we redirect stderr
-RUN lvh images build --image pathnet_${KERNEL_VER}.qcow2 --dir /data 2>&1
+RUN LIBGUESTFS_BACKEND_SETTINGS=force_tcg lvh images build --image pathnet_${KERNEL_VER}.qcow2 --dir /data 2>&1
 RUN zstd --compress --rm --threads=0 /data/images/pathnet_${KERNEL_VER}.qcow2
-RUN mv /data/images/pathnet_${KERNEL_VER}.qcow2.zst /data/images/lvh-pathnet_${KERNEL_VER}.qcow2.zst
 RUN rm /data/images/*.qcow2
 
 FROM busybox

@@ -12,6 +12,7 @@
             "util-linux",
             "vim",
             "binutils",
+            "netcat-openbsd",
             "systemd-resolved"
         ],
         "actions": [
@@ -47,6 +48,22 @@
                 "op": {
                     "File": "/etc/sysctl.conf",
                     "Line": "fs.inotify.max_user_instances = 512"
+                },
+                "type": "append-line"
+            },
+            {
+                "comment": "systemd workaround: copy .so",
+                "op": {
+                    "LocalPath": "bootstrap/systemd-pidfd-fix.so",
+                    "RemoteDir": "/"
+                },
+                "type": "copy-in"
+            },
+            {
+                "comment": "set preload",
+                "op": {
+                    "File": "/etc/ld.so.preload",
+                    "Line": "/systemd-pidfd-fix.so"
                 },
                 "type": "append-line"
             }
@@ -91,9 +108,17 @@
             "lsb-release",
             "wget",
             "software-properties-common",
-            "gnupg"
+            "gnupg",
+            "ntpdate"
         ],
         "actions": [
+            {
+                "comment": "update date (needed for libguestfs on arm64 running in Docker)",
+                "op": {
+                    "Cmd": "ntpdate pool.ntp.org"
+                },
+                "type": "run-command"
+            },
             {
                 "comment": "disable password for root",
                 "op": {
@@ -117,14 +142,14 @@
             },
             {
                 "op": {
-                    "File": "/etc/sysctl.conf",
+                    "File": "/etc/sysctl.d/99-sysctl.conf",
                     "Line": "fs.inotify.max_user_watches = 524288"
                 },
                 "type": "append-line"
             },
             {
                 "op": {
-                    "File": "/etc/sysctl.conf",
+                    "File": "/etc/sysctl.d/99-sysctl.conf",
                     "Line": "fs.inotify.max_user_instances = 512"
                 },
                 "type": "append-line"
@@ -132,7 +157,7 @@
             {
                 "comment": "env",
                 "op": {
-                    "File": "/data/env.sh",
+                    "File": "env.sh",
                     "Dest": "/etc/profile.d/path.sh"
                 },
                 "type": "upload"
@@ -140,7 +165,7 @@
             {
                 "comment": "copy-in bootstrap dir",
                 "op": {
-                    "LocalPath": "/data/bootstrap",
+                    "LocalPath": "bootstrap",
                     "RemoteDir": "/"
                 },
                 "type": "copy-in"
@@ -179,6 +204,29 @@
                     "Cmd": "/bootstrap/pathnet.sh"
                 },
                 "type": "run-command"
+            },
+            {
+                "comment": "install docker",
+                "op": {
+                    "Cmd": "/bootstrap/deb-docker.sh"
+                },
+                "type": "run-command"
+            },
+            {
+                "comment": "systemd workaround: copy .so",
+                "op": {
+                    "LocalPath": "bootstrap/systemd-pidfd-fix.so",
+                    "RemoteDir": "/"
+                },
+                "type": "copy-in"
+            },
+            {
+                "comment": "set preload",
+                "op": {
+                    "File": "/etc/ld.so.preload",
+                    "Line": "/systemd-pidfd-fix.so"
+                },
+                "type": "append-line"
             }
         ]
     }

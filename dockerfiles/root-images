@@ -1,17 +1,34 @@
 # vim: set ft=dockerfile:
 
-# force-rebuild: 1
+# rebuild: 20240730.231036
 
-ARG ROOT_BUILDER_TAG=20240201.145448
+ARG ROOT_BUILDER_TAG=invalid
+
+FROM gcc:14 AS systemd-workaround-builder
+COPY systemd-workaround /src
+RUN make -C /src
 
 ARG ROOT_BUILDER_NAME=quay.io/lvh-images/root-builder-ci
 
 FROM ${ROOT_BUILDER_NAME}:"${ROOT_BUILDER_TAG}" AS builder
 
 COPY _data /data
+COPY --from=systemd-workaround-builder /src/systemd-pidfd-fix.so /data/bootstrap/systemd-pidfd-fix.so
+
 RUN lvh version
+
+
 # mmdebstrap outputs messages in stderr, so we redirect stderr
-RUN lvh images build --dir /data 2>&1
+#
+# You cannot use KVM during docker build anyway (without insecure option), it
+# will fallback to emulation. However on arm64, libguestfs gives --machine
+# gic-version=host to qemu which will fail the fallback so we need to
+# explicitely tell libguestfs to use tcg
+#
+# for now we only build the kind image for arm64
+ARG TARGETARCH
+RUN if [ "$TARGETARCH" = "amd64" ]; then lvh images build --dir /data 2>&1; fi
+RUN if [ "$TARGETARCH" = "arm64" ]; then LIBGUESTFS_BACKEND_SETTINGS=force_tcg lvh images build --dir /data --image base.qcow2 --image kind.qcow2 2>&1; fi
 RUN zstd --compress --rm --threads=0 /data/images/*.qcow2
 
 # Can't use scratch here because we use `docker create` elsewhere, and

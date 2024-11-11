@@ -23,6 +23,13 @@ USE_CACHE ?= false
 # Check if variable USE_CACHE is set to false
 ifeq ($(USE_CACHE),false)
 	DOCKER_BUILD_FLAGS += --no-cache
+UNAME_M := $(shell uname -m)
+ifeq ($(UNAME_M),x86_64)
+	TARGET_ARCH ?= amd64
+else ifeq ($(UNAME_M),aarch64)
+	TARGET_ARCH ?= arm64
+else
+	TARGET_ARCH ?= amd64
 endif
 
 .PHONY: all
@@ -58,6 +65,7 @@ kernel-images: kernel-builder
 			--build-arg KERNEL_BUILDER_TAG=$(KERNEL_BUILDER_TAG) \
 			--build-arg KERNEL_BUILDER_NAME=$(KERNEL_BUILDER) \
 			--build-arg KERNEL_VER=$$v \
+			--platform=linux/${TARGET_ARCH} \
 			-f dockerfiles/kernel-images -t $(KERNEL_IMAGES):$$v . ; \
 	done
 
@@ -80,3 +88,10 @@ push:
 	for v in $(KERNEL_VERSIONS) ; do \
 		 $(DOCKER) push $(PATHNET_IMAGES):$$v ; \
 	done
+
+.PHONY: systemd-workaround
+systemd-workaround:
+	$(DOCKER) rm systemd-workaround-builder || true
+	$(DOCKER) run -v $(CURDIR)/systemd-workaround:/src:Z --name systemd-workaround-builder gcc:14 sh -c 'make -C /src'
+	cp $(CURDIR)/systemd-workaround/systemd-pidfd-fix.so _data/bootstrap/
+	$(DOCKER) rm systemd-workaround-builder

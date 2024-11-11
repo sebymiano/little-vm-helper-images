@@ -57,7 +57,7 @@ jobs:
         name: kernel versions
         with:
           script: |
-              var all_kernels = ['4.19', '5.4', '5.10', '5.15', '6.1', '6.6', 'bpf-next', 'rhel8' ]
+              var all_kernels = ['4.19', '5.4', '5.10', '5.15', '6.1', '6.6', 'bpf', 'bpf-net', 'bpf-next', 'rhel8.6', 'rhel8.9' ]
               var kernels = []
               const kernel_label_prefix = 'gha-builds/kernel/'
               res = await github.rest.issues.listLabelsOnIssue({
@@ -80,12 +80,25 @@ jobs:
 
               ret = []
               for (const k of kernels) {
-                  if (k == "rhel8") {
-                    dockerfile = "dockerfiles/kernel-images-rhel8"
-                  } else {
-                    dockerfile = "dockerfiles/kernel-images"
+                  options = {"ver": k}
+                  switch (k) {
+                      case 'rhel8.6':
+                          options.dockerfile = "dockerfiles/kernel-images-rhel8"
+                          options.platforms = 'linux/amd64'
+                          options.rhel_ver = '8.6'
+                          options.rhel_kver = '4.18.0-372.32.1.el8_6'
+                          break
+                      case 'rhel8.9':
+                          options.dockerfile = "dockerfiles/kernel-images-rhel8"
+                          options.platforms = 'linux/amd64'
+                          options.rhel_ver = '8.9'
+                          options.rhel_kver = '4.18.0-513.24.1.el8_9'
+                          break
+                      default:
+                          options.dockerfile = "dockerfiles/kernel-images"
+                          options.platforms = 'linux/amd64,linux/arm64'
                   }
-                  ret.push({"ver": k, "dockerfile": dockerfile})
+                  ret.push(options)
               }
               return ret
       - name: configure
@@ -127,6 +140,8 @@ jobs:
      build-tag: quay.io/lvh-images/kernel-images-ci:${{ matrix.kernel.ver }}-${{ needs.conf.outputs.tag }}
      build-args: |
           "KERNEL_VER=${{ matrix.kernel.ver }}"
+          "RHEL_VER=${{ matrix.kernel.rhel_ver }}"
+          "RHEL_KVER=${{ matrix.kernel.rhel_kver }}"
      check-files: '.'
      base-ref: ${{ github.base_ref }}
      dry-run: ${{ needs.conf.outputs.dry-run == 'y' }}
@@ -134,39 +149,54 @@ jobs:
      patch-cmd: |
          mkdir -p versions/kernel-images
          echo ${{ needs.conf.outputs.tag}} > versions/kernel-images/${{ matrix.kernel.ver }}
+     platforms: ${{ matrix.kernel.platforms }}
 
   root-builder:
     needs: [conf]
     if: ${{ needs.conf.outputs.run == 'y' }}
+    strategy:
+      matrix:
+        runner:
+          - {name: "ubuntu-latest", arch: "amd64"}
+          - {name: "ubuntu-22.04-arm64", arch: "arm64"}
     uses: ./.github/workflows/buildx-stage.yaml
     secrets: inherit
     with:
-     name: root-builder
+     name: root-builder-${{ matrix.runner.arch }}
+     runner: ${{ matrix.runner.name }}
      check-files: dockerfiles/root-builder
      build-file: dockerfiles/root-builder
-     build-tag: quay.io/lvh-images/root-builder-ci:${{ needs.conf.outputs.tag }}
+     build-tag: quay.io/lvh-images/root-builder-ci:${{ needs.conf.outputs.tag }}-${{ matrix.runner.arch }}
      base-ref: ${{ github.base_ref }}
      dry-run: ${{ needs.conf.outputs.dry-run == 'y' }}
      patch-cmd: |
-        perl -pi -e 's/^ARG ROOT_BUILDER_TAG.*$/ARG ROOT_BUILDER_TAG=${{ needs.conf.outputs.tag }}/' dockerfiles/*
-        echo ${{ needs.conf.outputs.tag }} > versions/root-builder
+        mkdir -p versions/root-builder
+        echo ${{ needs.conf.outputs.tag }}-${{ matrix.runner.arch }} > versions/root-builder/${{ matrix.runner.arch }}
 
   root-images:
     needs: [conf, root-builder]
     if: ${{ needs.conf.outputs.run == 'y' }}
+    strategy:
+      matrix:
+        runner:
+          - {name: "ubuntu-latest", arch: "amd64"}
+          - {name: "ubuntu-22.04-arm64", arch: "arm64"}
     uses: ./.github/workflows/buildx-stage.yaml
     secrets: inherit
     with:
-     name: root-images
+     name: root-images-${{ matrix.runner.arch }}
+     runner: ${{ matrix.runner.name }}
      check-files: dockerfiles/root-images _data/images.json _data/env.sh _data/bootstrap
      build-file: dockerfiles/root-images
-     build-tag: quay.io/lvh-images/root-images-ci:${{ needs.conf.outputs.tag }}
+     build-tag: quay.io/lvh-images/root-images-ci:${{ needs.conf.outputs.tag }}-${{ matrix.runner.arch }}
+     build-args: |
+          "ROOT_BUILDER_TAG=$(cat versions/root-builder/${{ matrix.runner.arch }})"
      base-ref: ${{ github.base_ref }}
      dry-run: ${{ needs.conf.outputs.dry-run == 'y' }}
-     apply-patch: root-builder.patch
+     apply-patch: root-builder-${{ matrix.runner.arch }}.patch
      patch-cmd: |
-        perl -pi -e 's/^ARG ROOT_IMAGES_TAG.*$/ARG ROOT_IMAGES_TAG=${{ needs.conf.outputs.tag }}/' dockerfiles/*
-        echo ${{ needs.conf.outputs.tag }} > versions/root-images
+        mkdir -p versions/root-images
+        echo ${{ needs.conf.outputs.tag }}-${{ matrix.runner.arch }} > versions/root-images/${{ matrix.runner.arch }}
 
   kind-images:
     if: ${{ needs.conf.outputs.run == 'y' }}
@@ -174,24 +204,35 @@ jobs:
     strategy:
       matrix:
         kernel: ${{ fromJSON(needs.conf.outputs.kvers) }}
+        runner:
+          - {name: "ubuntu-latest", arch: "amd64"}
+          - {name: "ubuntu-22.04-arm64", arch: "arm64"}
+        exclude:
+          - runner: {name: "ubuntu-22.04-arm64", arch: "arm64"}
+            kernel: {ver: "rhel8.6"}
+          - runner: {name: "ubuntu-22.04-arm64", arch: "arm64"}
+            kernel: {ver: "rhel8.9"}
     uses: ./.github/workflows/buildx-stage.yaml
     secrets: inherit
     with:
-     name: kind-image-${{ matrix.kernel.ver }}
+     name: kind-image-${{ matrix.kernel.ver }}-${{ matrix.runner.arch }}
+     runner: ${{ matrix.runner.name }}
      build-file: dockerfiles/kind-images
-     build-tag: quay.io/lvh-images/kind-ci:${{ matrix.kernel.ver }}-${{ needs.conf.outputs.tag }}
+     build-tag: quay.io/lvh-images/kind-ci:${{ matrix.kernel.ver }}-${{ needs.conf.outputs.tag }}-${{ matrix.runner.arch }}
      build-args: |
           "KERNEL_VER=${{ matrix.kernel.ver }}"
           "KERNEL_IMAGE_TAG=${{ matrix.kernel.ver }}-${{ needs.conf.outputs.tag }}"
+          "ROOT_IMAGES_TAG=$(cat versions/root-images/${{ matrix.runner.arch }})"
      check-files: '.'
      base-ref: ${{ github.base_ref }}
      dry-run: ${{ needs.conf.outputs.dry-run == 'y' }}
-     apply-patch: root-images.patch
+     apply-patch: root-images-${{ matrix.runner.arch }}.patch
      apply-patch-2: kernel-image-${{ matrix.kernel.ver }}.patch
      patch-cmd: |
-         mkdir -p versions/kind
-         echo ${{ needs.conf.outputs.tag}} > versions/kind/${{ matrix.kernel.ver }}
+         mkdir -p versions/kind/${{ matrix.runner.arch }}
+         echo ${{ needs.conf.outputs.tag }}-${{ matrix.runner.arch }} > versions/kind/${{ matrix.runner.arch }}/${{ matrix.kernel.ver }}
 
+  # complexity-test-images is hardcoded amd64 only for now
   complexity-test-images:
     if: ${{ needs.conf.outputs.run == 'y' }}
     needs: [conf, kernel-images, root-images]
@@ -201,16 +242,17 @@ jobs:
     uses: ./.github/workflows/buildx-stage.yaml
     secrets: inherit
     with:
-     name: complexity-test-${{ matrix.kernel.ver }}
+     name: complexity-test-${{ matrix.kernel.ver }}-amd64
      build-file: dockerfiles/complexity-test-images
      build-tag: quay.io/lvh-images/complexity-test-ci:${{ matrix.kernel.ver }}-${{ needs.conf.outputs.tag }}
      build-args: |
           "KERNEL_VER=${{ matrix.kernel.ver }}"
           "KERNEL_IMAGE_TAG=${{ matrix.kernel.ver }}-${{ needs.conf.outputs.tag }}"
+          "ROOT_IMAGES_TAG=$(cat versions/root-images/amd64)"
      check-files: '.'
      base-ref: ${{ github.base_ref }}
      dry-run: ${{ needs.conf.outputs.dry-run == 'y' }}
-     apply-patch: root-images.patch
+     apply-patch: root-images-amd64.patch
      apply-patch-2: kernel-image-${{ matrix.kernel.ver }}.patch
      patch-cmd: |
          mkdir -p versions/complexity-test
@@ -224,27 +266,30 @@ jobs:
       sha: ${{ steps.push.outputs.sha }}
     steps:
       - name: checkout
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           ref: ${{ github.event.pull_request.head.ref }}
       - name: download all artifacts
-        uses: actions/download-artifact@c850b930e6ba138125429b7e5c93fc707a7f8427 # v4.1.4
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
         with:
+          pattern: "*.patch"
           path: /tmp/artifacts
       - name: push new version
         id: push
+        env:
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
         run: |
           git switch -c tmp
           git config user.name "GH action"
           git config user.email "ghabot@does.not.exist.cilium.org"
           find /tmp/artifacts -type f ! -size 0 | xargs git am
-          git reset --soft ${{ github.event.pull_request.head.ref }}
+          git reset --soft "$HEAD_REF"
           git status
           f=$(mktemp)
           echo "GHA: update tags" >> $f
           echo "" >> $f
           git commit -a -F $f --trailer "X-GHA-TAG: ${{ needs.conf.outputs.tag }}"
-          git push --force origin HEAD:${{ github.event.pull_request.head.ref }}
+          git push --force origin HEAD:"$HEAD_REF"
           sha=$(git rev-parse HEAD)
           echo "sha=$sha" | tee -a $GITHUB_OUTPUT
       - uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
@@ -264,20 +309,35 @@ jobs:
   print_image_kernels:
     needs: [conf, commit-changes]
     if: ${{ needs.conf.outputs.run == 'y' && needs.commit-changes.result == 'success' &&  needs.conf.outputs.dry-run != 'y' }}
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        runner:
+          - "ubuntu-latest"
+          - "ubuntu-22.04-arm64"
+    runs-on: ${{ matrix.runner }}
     steps:
+      - name: install crane
+        env:
+          VERSION: v0.19.1
+        run: |
+          ARCH=$([ "$(uname -m)" == "aarch64" ] && echo "arm64" || echo $(uname -m))
+          URL="https://github.com/google/go-containerregistry/releases/download/$VERSION/go-containerregistry_Linux_$ARCH.tar.gz"
+          curl -fSL $URL | sudo tar -xz -C /usr/local/bin crane
+          crane version
+
       - name: Install LVH cli
+        working-directory: /tmp
         shell: bash
         run: |
-          cid=$(docker create quay.io/lvh-images/lvh:latest)
-          docker cp $cid:/usr/bin/lvh /tmp/lvh
-          docker rm $cid
-          chmod +x /tmp/lvh
-          sudo mv /tmp/lvh /bin/lvh
+          crane export quay.io/lvh-images/lvh:latest --platform linux/$(dpkg --print-architecture) lvh.tar
+          tar --transform='s#usr/bin/##g' -xf lvh.tar usr/bin/lvh
+          rm lvh.tar
+          chmod +x lvh && sudo mv lvh /usr/local/bin
+          lvh version
 
       - name: Install dependencies
         run: |
-           deps="expect cpu-checker qemu-system-x86"
+           deps="expect cpu-checker qemu-system-x86 qemu-system-aarch64"
            n=0
            until [ "$n" -ge 5 ]; do
              success=1
@@ -291,7 +351,7 @@ jobs:
            [ $success -eq 1 ] || exit 42
 
       - name: checkout
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           ref: ${{ needs.commit-changes.outputs.sha }}
 
@@ -301,24 +361,49 @@ jobs:
         run: |
           echo "| Image | kernel version |" > /tmp/image-log
           echo "| --- | --- |" >> /tmp/image-log
-          sudo mkdir /_images; sudo chmod 777 /_images
-          for f in $(find . -type f ); do
+          images_folder=/tmp/lvh-images
+          sudo mkdir $images_folder; sudo chmod 777 $images_folder
+          for f in $(find $(dpkg --print-architecture) -type f ); do
             df -h /
+
             v=$(basename $f)
-            tag=$(cat $f)
-            image="quay.io/lvh-images/kind-ci:$v-$tag"
-            echo docker run -v /_images:/mnt/images $image cp /data/images/kind_$v.qcow2.zst /mnt/images
-            docker run -v /_images:/mnt/images $image cp /data/images/kind_$v.qcow2.zst /mnt/images
-            zstd -d /_images/kind_$v.qcow2.zst -o /_images/kind_$v.qcow2
-            expect -c "
-                      set timeout 60
-                      spawn lvh run  --image /_images/kind_$v.qcow2
-                      expect -re \"Linux version .*\n\" { exit }
-            " | tee /tmp/expect.log
+            image_tag=$(cat $f)
+            image="quay.io/lvh-images/kind-ci:$v-$image_tag"
+
+            # extract the qcow2 image
+            crane export $image --platform linux/$(dpkg --print-architecture) $images_folder/kind_$v.tar
+            tar --transform='s#data/images/##g' -xvf $images_folder/kind_$v.tar data/images/kind_$v.qcow2.zst
+            mv kind_$v.qcow2.zst $images_folder
+            rm $images_folder/kind_$v.tar
+            zstd -d $images_folder/kind_$v.qcow2.zst -o $images_folder/kind_$v.qcow2
+            rm $images_folder/kind_$v.qcow2.zst
+
+            if [ "$(uname -m)" = "aarch64" ]; then
+              # extract the compressed kernel
+              kernel_tag=$(cat ../kernel-images/$v)
+              kernel="quay.io/lvh-images/kernel-images-ci:$v-$kernel_tag"
+              crane export $kernel --platform linux/$(dpkg --print-architecture) $images_folder/kernel_$v.tar
+              tar --transform="s#data/kernels/$v/boot/##g" --wildcards -xvf $images_folder/kernel_$v.tar data/kernels/$v/boot/vmlinuz*
+              mv vmlinuz* $images_folder/vmlinuz
+              rm $images_folder/kernel_$v.tar
+            fi
+
+            if [ "$(uname -m)" = "aarch64" ]; then
+              expect -c "
+                        set timeout 60
+                        spawn lvh run --image $images_folder/kind_$v.qcow2 --kernel $images_folder/vmlinuz
+                        expect -re \"Linux version .*\n\" { exit }
+              " | tee /tmp/expect.log
+            else
+              expect -c "
+                        set timeout 60
+                        spawn lvh run --image $images_folder/kind_$v.qcow2
+                        expect -re \"Linux version .*\n\" { exit }
+              " | tee /tmp/expect.log
+            fi
             linux_ver=$(cat /tmp/expect.log | sed -ne 's/^.*Linux version \([^ ]\+\).*$/\1/p')
             echo "| ${image} | ${linux_ver} |" | tee -a /tmp/image-log
-            rm /_images/*
-            docker image prune -a -f
+            rm $images_folder/*
           done
           echo 'IMAGE_LOG<<EOF' >> $GITHUB_ENV
           cat /tmp/image-log >> $GITHUB_ENV

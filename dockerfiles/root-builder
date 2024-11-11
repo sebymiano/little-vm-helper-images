@@ -4,7 +4,7 @@ ARG LVH_IMAGE_TAG=latest
 
 FROM ${LVH_IMAGE_NAME}:"${LVH_IMAGE_TAG}" AS lvh
 
-# rebuild: 20240130.185336
+# rebuild: 20240730.231036
 
 FROM ubuntu:rolling
 
@@ -15,9 +15,16 @@ RUN apt-get update --quiet && \
           mmdebstrap \
           libguestfs-tools \
           qemu-utils \
-          extlinux \
           linux-image-generic \
-          zstd
+          zstd \
+          isc-dhcp-client
+
+ARG TARGETARCH
+RUN if [ "$TARGETARCH" = "amd64" ]; then apt-get install -yq --no-install-recommends extlinux; fi
+# this might be counter intuitive but without this package (or one of its
+# subpackage), starting qemu with '-device virtio-net-pci,netdev=usernet' will
+# fail with 'failed to find romfile "efi-virtio.rom"'
+RUN if [ "$TARGETARCH" = "arm64" ]; then apt-get install -yq --no-install-recommends qemu-system-x86; fi
 
 RUN apt-get install debian-archive-keyring && \
     cp /usr/share/keyrings/debian-archive-keyring.gpg /etc/apt/trusted.gpg.d/
