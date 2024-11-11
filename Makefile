@@ -45,16 +45,18 @@ all:
 
 .PHONY: kernel-builder
 kernel-builder:
-	$(DOCKER) build -f dockerfiles/kernel-builder -t $(KERNEL_BUILDER):$(KERNEL_BUILDER_TAG) .
+	$(DOCKER) build --progress=plain -f dockerfiles/kernel-builder -t $(KERNEL_BUILDER):$(KERNEL_BUILDER_TAG) .
 
 .PHONY: root-builder
 root-builder:
-	$(DOCKER) build -f dockerfiles/root-builder -t $(ROOT_BUILDER):$(ROOT_BUILDER_TAG) .
+	$(DOCKER) build -f dockerfiles/root-builder \
+		--progress=plain \
+		-t $(ROOT_BUILDER):$(ROOT_BUILDER_TAG) .
 
 .PHONY: root-images
 root-images: root-builder
 	$(DOCKER) build -f dockerfiles/root-images \
-		--progress=plain --no-cache \
+		--progress=plain $(DOCKER_BUILD_FLAGS) \
 		--build-arg ROOT_BUILDER_TAG=$(ROOT_BUILDER_TAG) \
 		--build-arg ROOT_BUILDER_NAME=$(ROOT_BUILDER) \
 		-t $(ROOT_IMAGES):$(ROOT_IMAGES_TAG)  .
