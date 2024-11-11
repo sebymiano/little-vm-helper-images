@@ -17,7 +17,7 @@ FROM ${ROOT_IMAGES_NAME}:"${ROOT_IMAGES_TAG}" AS root-images
 FROM ${KERNEL_IMAGES_NAME}:"${KERNEL_IMAGE_TAG}" AS kimg
 
 FROM ${LVH_IMAGE_NAME}:"${LVH_IMAGE_TAG}" AS lvh
-FROM ubuntu:rolling AS builder
+FROM ubuntu:22.04 AS builder
 
 ARG KERNEL_VER=bpf-next
 

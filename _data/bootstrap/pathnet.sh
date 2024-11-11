@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 set -euxo pipefail
 
+set +u
 . /etc/profile
+set -u
 
 resolv_path="/etc/resolv.conf"
 
@@ -10,10 +12,33 @@ nameserver 8.8.8.8
 nameserver 1.1.1.1
 EOF
 
+apt update
+apt install software-properties-common -y
+
+# add-apt-repository ppa:deadsnakes/ppa -y
+cat > /etc/apt/sources.list.d/deadsnakes-ppa.list <<EOF
+deb [arch=$(dpkg --print-architecture)] https://ppa.launchpadcontent.net/deadsnakes/ppa/ubuntu noble main 
+deb-src [arch=$(dpkg --print-architecture)] https://ppa.launchpadcontent.net/deadsnakes/ppa/ubuntu noble main 
+EOF
+apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F23C5A6CF475977595C89F51BA6932366A755776
+# echo "deb http://ppa.launchpad.net/deadsnakes/ppa/ubuntu $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/deadsnakes-ppa.list
+apt update
+apt install python3.11 python3.11-dev python3.11-venv -y
+
 LLVM_VERSION=15
-wget https://apt.llvm.org/llvm.sh
-chmod +x llvm.sh
-./llvm.sh $LLVM_VERSION
+# wget https://apt.llvm.org/llvm.sh
+# chmod +x llvm.sh
+# ./llvm.sh $LLVM_VERSION
+
+cat > /etc/apt/sources.list.d/llvm.list <<EOF
+deb [arch=$(dpkg --print-architecture)] http://apt.llvm.org/jammy/ llvm-toolchain-jammy-15 main
+deb-src [arch=$(dpkg --print-architecture)] http://apt.llvm.org/jammy/ llvm-toolchain-jammy-15 main
+EOF
+
+wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+
+apt update
+apt install clang-$LLVM_VERSION llvm-$LLVM_VERSION llvm-$LLVM_VERSION-dev llvm-$LLVM_VERSION-tools llvm clang -y
 
 #bash -c "DEBIAN_FRONTEND=noninteractive apt-get install -yq llvm clang"
 

@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 set -euxo pipefail
 
+set +u
 . /etc/profile
+set -u
 
 config_path="/etc/systemd/network/20-interfaces.network"
 
@@ -26,4 +28,4 @@ EOF
 systemctl enable systemd-networkd
 systemctl restart systemd-resolved
 
-ping -c 4 google.com
+# ping -c 4 google.com

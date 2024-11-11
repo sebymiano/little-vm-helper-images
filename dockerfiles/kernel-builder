@@ -6,7 +6,7 @@ FROM ${LVH_IMAGE_NAME}:"${LVH_IMAGE_TAG}" AS lvh
 
 # 20240130.185425
 
-FROM ubuntu:rolling
+FROM ubuntu:22.04
 
 COPY --from=lvh /usr/bin/lvh /usr/bin/lvh
 RUN  apt-get update -yq &&  \

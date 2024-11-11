@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 set -euxo pipefail
 
+set +u
 . /etc/profile
+set -u
 
 config_path="/etc/ssh/sshd_config"
 

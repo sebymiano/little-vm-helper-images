@@ -94,9 +94,6 @@
             "ethtool",
             "systemd-resolved",
             "libelf-dev",
-            "python3.11",
-            "python3.11-dev",
-            "python3.11-venv",
             "rsync",
             "libcap2",
             "curl",
@@ -112,13 +109,6 @@
             "ntpdate"
         ],
         "actions": [
-            {
-                "comment": "update date (needed for libguestfs on arm64 running in Docker)",
-                "op": {
-                    "Cmd": "ntpdate pool.ntp.org"
-                },
-                "type": "run-command"
-            },
             {
                 "comment": "disable password for root",
                 "op": {
@@ -227,6 +217,13 @@
                     "Line": "/systemd-pidfd-fix.so"
                 },
                 "type": "append-line"
+            },
+            {
+                "comment": "update date (needed for libguestfs on arm64 running in Docker)",
+                "op": {
+                    "Cmd": "ntpdate pool.ntp.org"
+                },
+                "type": "run-command"
             }
         ]
     }
