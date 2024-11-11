@@ -1,15 +1,15 @@
 OCIORG                    ?= sebymiano
 LVH                       ?= quay.io/lvh-images/lvh
-ROOT_BUILDER              ?= $(OCIORG)/lvh-root-builder
-ROOT_IMAGES               ?= $(OCIORG)/lvh-root-images
-KERNEL_BUILDER            ?= $(OCIORG)/lvh-kernel-builder
-KERNEL_IMAGES             ?= $(OCIORG)/lvh-kernel-images
+ROOT_BUILDER              ?= $(OCIORG)/root-builder-ci
+ROOT_IMAGES               ?= $(OCIORG)/root-images-ci
+KERNEL_BUILDER            ?= $(OCIORG)/kernel-builder-ci
+KERNEL_IMAGES             ?= $(OCIORG)/kernel-images-ci
 PATHNET_IMAGES            ?= $(OCIORG)/lvh-pathnet
 
 KERNEL_BUILDER_TAG        ?= main
 ROOT_BUILDER_TAG          ?= main
 ROOT_IMAGES_TAG           ?= main
-KERNEL_VERSIONS           ?= 5.15 6.2 bpf_next
+KERNEL_VERSIONS           ?= 5.15 6.2 bpf-next
 
 DOCKER ?= docker
 export DOCKER_BUILDKIT = 1
@@ -23,6 +23,8 @@ USE_CACHE ?= false
 # Check if variable USE_CACHE is set to false
 ifeq ($(USE_CACHE),false)
 	DOCKER_BUILD_FLAGS += --no-cache
+endif
+
 UNAME_M := $(shell uname -m)
 ifeq ($(UNAME_M),x86_64)
 	TARGET_ARCH ?= amd64

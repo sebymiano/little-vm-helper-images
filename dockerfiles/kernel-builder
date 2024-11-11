@@ -1,6 +1,6 @@
 # vim: set ft=dockerfile:
 ARG LVH_IMAGE_NAME=quay.io/lvh-images/lvh
-ARG LVH_IMAGE_TAG=latest
+ARG LVH_IMAGE_TAG=v0.0.19
 
 FROM ${LVH_IMAGE_NAME}:"${LVH_IMAGE_TAG}" AS lvh
 
