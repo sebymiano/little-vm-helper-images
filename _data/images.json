@@ -217,13 +217,6 @@
                     "Line": "/systemd-pidfd-fix.so"
                 },
                 "type": "append-line"
-            },
-            {
-                "comment": "update date (needed for libguestfs on arm64 running in Docker)",
-                "op": {
-                    "Cmd": "ntpdate pool.ntp.org"
-                },
-                "type": "run-command"
             }
         ]
     }
