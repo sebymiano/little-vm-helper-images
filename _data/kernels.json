@@ -1,7 +1,7 @@
 {
     "kernels": [
         {
-            "name": "bpf-next",
+            "name": "bpf_next",
             "url": "git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git?depth=1",
             "opts": [
                 [
