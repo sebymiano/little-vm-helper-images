@@ -67,7 +67,11 @@ jobs:
 
       - name: download first patch
         if: ${{ steps.check.outputs.build == 'y' && inputs.apply-patch != '' }}
+<<<<<<< HEAD
         uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+=======
+        uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4.2.1
+>>>>>>> origin/main
         with:
            name: ${{ inputs.apply-patch }}
            path: /tmp/
@@ -82,7 +86,11 @@ jobs:
 
       - name: download second patch
         if: ${{ steps.check.outputs.build == 'y' && inputs.apply-patch-2 != '' }}
+<<<<<<< HEAD
         uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+=======
+        uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4.2.1
+>>>>>>> origin/main
         with:
            name: ${{ inputs.apply-patch-2 }}
            path: /tmp/
@@ -106,17 +114,28 @@ jobs:
 
       - name: setup buildx
         if: ${{ steps.check.outputs.build == 'y' && !inputs.dry-run }}
+<<<<<<< HEAD
         uses: docker/setup-buildx-action@c47758b77c9736f4b2ef4073d4d51994fabfe349 # v3.7.1
       - name: quay login
         if: ${{ steps.check.outputs.build == 'y' && !inputs.dry-run }}
         uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # v3.3.0
+=======
+        uses: docker/setup-buildx-action@b5ca514318bd6ebac0fb2aedd5d36ec1b5c232a2 # v3.10.0
+      - name: quay login
+        if: ${{ steps.check.outputs.build == 'y' && !inputs.dry-run }}
+        uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3.4.0
+>>>>>>> origin/main
         with:
           registry: quay.io
           username: ${{ secrets.QUAY_USERNAME }}
           password: ${{ secrets.QUAY_ROBOT_TOKEN }}
       - name: build and push
         if: ${{ steps.check.outputs.build == 'y' && !inputs.dry-run }}
+<<<<<<< HEAD
         uses: docker/build-push-action@4f58ea79222b3b9dc2c8bbdd6debcef730109a75 # v6.9.0
+=======
+        uses: docker/build-push-action@471d1dc4e07e5cdedd4c2171150001c434f0b7a4 # v6.15.0
+>>>>>>> origin/main
         with:
           context: .
           push: true
@@ -143,7 +162,11 @@ jobs:
 
       - name: upload patch
         if: ${{ inputs.patch-cmd != '' }}
+<<<<<<< HEAD
         uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+=======
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+>>>>>>> origin/main
         with:
           name: ${{ inputs.name }}.patch
           path: ${{ inputs.name }}.patch

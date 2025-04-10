@@ -5,11 +5,13 @@ ROOT_IMAGES               ?= $(OCIORG)/root-images-ci
 KERNEL_BUILDER            ?= $(OCIORG)/kernel-builder-ci
 KERNEL_IMAGES             ?= $(OCIORG)/kernel-images-ci
 PATHNET_IMAGES            ?= $(OCIORG)/lvh-pathnet
+KIND_IMAGES               ?= $(OCIORG)/kind-ci
+COMPLEXITY_TEST_IMAGES    ?= $(OCIORG)/complexity-test-ci
 
 KERNEL_BUILDER_TAG        ?= main
 ROOT_BUILDER_TAG          ?= main
 ROOT_IMAGES_TAG           ?= main
-KERNEL_VERSIONS           ?= 5.15 6.2 bpf_next
+KERNEL_VERSIONS           ?= 5.15 6.2 6.11 bpf_next
 
 DOCKER ?= docker
 export DOCKER_BUILDKIT = 1

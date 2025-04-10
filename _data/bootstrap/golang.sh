@@ -13,7 +13,7 @@ nameserver 1.1.1.1
 EOF
 
 # renovate: datasource=golang-version depName=go
-GOLANG_VERSION=1.23.3
+GOLANG_VERSION=1.24.2
 GOLANG_DOWNLOAD_URL=https://golang.org/dl/go$GOLANG_VERSION.linux-$(dpkg --print-architecture).tar.gz
 
 curl -fsSL "$GOLANG_DOWNLOAD_URL" -o golang.tar.gz \

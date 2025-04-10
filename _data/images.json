@@ -52,20 +52,12 @@
                 "type": "append-line"
             },
             {
-                "comment": "systemd workaround: copy .so",
+                "comment": "systemd workaround: copy /etc/profile.d/70-systemd-shell-extra.sh without unset variables",
                 "op": {
-                    "LocalPath": "bootstrap/systemd-pidfd-fix.so",
-                    "RemoteDir": "/"
+                    "File": "70-systemd-shell-extra.sh",
+                    "Dest": "/etc/profile.d/70-systemd-shell-extra.sh"
                 },
-                "type": "copy-in"
-            },
-            {
-                "comment": "set preload",
-                "op": {
-                    "File": "/etc/ld.so.preload",
-                    "Line": "/systemd-pidfd-fix.so"
-                },
-                "type": "append-line"
+                "type": "upload"
             }
         ]
     },
@@ -106,9 +98,17 @@
             "wget",
             "software-properties-common",
             "gnupg",
-            "ntpdate"
+            "ntpsec-ntpdate",
+            "bind9-dnsutils"
         ],
         "actions": [
+            {
+                "comment": "update date (needed for libguestfs on arm64 running in Docker)",
+                "op": {
+                    "Cmd": "ntpdate pool.ntp.org"
+                },
+                "type": "run-command"
+            },
             {
                 "comment": "disable password for root",
                 "op": {
@@ -149,6 +149,14 @@
                 "op": {
                     "File": "env.sh",
                     "Dest": "/etc/profile.d/path.sh"
+                },
+                "type": "upload"
+            },
+            {
+                "comment": "systemd workaround: copy /etc/profile.d/70-systemd-shell-extra.sh without unset variables",
+                "op": {
+                    "File": "70-systemd-shell-extra.sh",
+                    "Dest": "/etc/profile.d/70-systemd-shell-extra.sh"
                 },
                 "type": "upload"
             },
@@ -201,22 +209,6 @@
                     "Cmd": "/bootstrap/deb-docker.sh"
                 },
                 "type": "run-command"
-            },
-            {
-                "comment": "systemd workaround: copy .so",
-                "op": {
-                    "LocalPath": "bootstrap/systemd-pidfd-fix.so",
-                    "RemoteDir": "/"
-                },
-                "type": "copy-in"
-            },
-            {
-                "comment": "set preload",
-                "op": {
-                    "File": "/etc/ld.so.preload",
-                    "Line": "/systemd-pidfd-fix.so"
-                },
-                "type": "append-line"
             }
         ]
     }

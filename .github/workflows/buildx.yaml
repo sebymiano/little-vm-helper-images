@@ -57,7 +57,11 @@ jobs:
         name: kernel versions
         with:
           script: |
+<<<<<<< HEAD
               var all_kernels = ['4.19', '5.4', '5.10', '5.15', '6.1', '6.6', 'bpf', 'bpf-net', 'bpf-next', 'rhel8.6', 'rhel8.9' ]
+=======
+              var all_kernels = ['4.19', '5.4', '5.10', '5.15', '6.1', '6.6', '6.12', 'bpf', 'bpf-net', 'bpf-next', 'rhel8.6', 'rhel8.9' ]
+>>>>>>> origin/main
               var kernels = []
               const kernel_label_prefix = 'gha-builds/kernel/'
               res = await github.rest.issues.listLabelsOnIssue({
@@ -270,7 +274,11 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.ref }}
       - name: download all artifacts
+<<<<<<< HEAD
         uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+=======
+        uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4.2.1
+>>>>>>> origin/main
         with:
           pattern: "*.patch"
           path: /tmp/artifacts
